@@ -1,5 +1,6 @@
 package geneticalgo;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -37,12 +38,14 @@ public class GeneticAlgorithm {
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
             hypothesises.put(h, FitnessFunction.fitness(h));
+            System.out.println(hypothesises.get(h) + " - " + h);
         }
         // TODO: combine above steps for efficiency. i.e. get the fitness value
         // as bitStrings are put into the map
 
         // while [max,,h,, fitness(h)] < fitness_threshold
         while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
+            System.out.println("The next generation");
             
             // the set Ps in the comments
             Map<String, Integer> nextHypothesises = new HashMap<String, Integer>(p);
@@ -63,7 +66,7 @@ public class GeneticAlgorithm {
 
             // mutate: invert a randomly selected bit in m * p random hypos from
             // set Ps
-            mutate();
+            mutate(nextHypothesises, m, p);
 
             // update: P <- Ps
             hypothesises = nextHypothesises;
@@ -72,6 +75,7 @@ public class GeneticAlgorithm {
             // TODO: functionize this more since we use it twice
             for (String h : hypothesises.keySet()) {
                 hypothesises.put(h, FitnessFunction.fitness(h));
+                System.out.println(hypothesises.get(h) + " - " + h);
             }
 
             // done - end of while loop
@@ -81,35 +85,75 @@ public class GeneticAlgorithm {
         // return the hypo with highest fitness in P
         String best = SetUtilClass.maxHypothesis(hypothesises);
 
-        System.out.println("Best hypo: " + best);
+        System.out.println("Best hypo: " + best + " - " + hypothesises.get(best));
 
     }
 
     /**
-     *    // mutate: invert a randomly selected bit in m * p random hypos from
-            // set Ps
+     * mutate: invert a randomly selected bit in m * p random hypos from set Ps
+     * @param p 
+     * @param m 
+     * @param nextHypothesises 
      */
-    private void mutate() {
-        // TODO Auto-generated method stub
-        
+    private void mutate(Map<String, Integer> nextHypothesises, int m, int p) {
+        // int numberOfHypothesisesToMutate = m * p;
+        int numberOfHypothesisesToMutate = nextHypothesises.keySet().size() / 2;
+        // TODO: just mutate half, naive implementation, until meaning of m is
+        // revealed.
+        // m == mutation rate? a small value like 0.1?
+
+        // welcome to xaviers school for gifted hypothesises.
+        String[] genePool = new String[nextHypothesises.keySet().size()];
+        nextHypothesises.keySet().toArray(genePool);
+        nextHypothesises.clear();
+        Random random = new Random();
+        for (int i = 0; i < numberOfHypothesisesToMutate; i++) {
+            int mutantIndex = random.nextInt(genePool.length);
+            int randomInt = random.nextInt(genePool[0].length());
+            char[] mutant = genePool[mutantIndex].toCharArray();
+            if (mutant[randomInt] == '1') {
+                mutant[randomInt] = '0';
+            } else if (mutant[randomInt] == '0') {
+                mutant[randomInt] = '1';
+            } else {
+                // should not get here
+                String s = null;
+                s.length();
+            }
+            genePool[mutantIndex] = new String(mutant);
+        }
+        // add bitStrings back into the set
+        for (int i = 0; i < genePool.length; i++) {
+            nextHypothesises.put(genePool[i], null);
+        }
     }
 
     /**
      * implementation of all of this.
      * basically selecting new hypothesises for the next generation of the algorithm
      * 
-            // select: probabilistically select (1-r)p members of P to add to Ps
-            // Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness
-            // h,,j,,)
-            // so the probability that hypothesis h,,i,, will be selected is
-            // the fitness of h,,i,, divided by the sum of all fitnesses of al
-            // hypothesis???
-            // TODO: need to check the above formula, what does it mean?
+     * select: probabilistically select (1-r)p members of P to add to Ps
+     * Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness h,,j,,)
+     * so the probability that hypothesis h,,i,, will be selected is
+     * the fitness of h,,i,, divided by the sum of all fitnesses of all
+     * hypothesis???
+     * TODO: need to check the above formula, what does it mean?
      * @param nextHypothesises 
      * @param hypothesises 
      */
     private void selectNewGeneration(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises) {
-        nextHypothesises.putAll(hypothesises);
+        // only adding the best 50% to the next generation of super soldiers.
+        int mean = 0;
+        for (Integer i : hypothesises.values()) {
+            mean += i;
+        }
+        mean /= hypothesises.values().size();
+        
+        for (String s : hypothesises.keySet()) {
+            if (hypothesises.get(s) >= mean) { // we have a strong hypothesis
+                nextHypothesises.put(s, hypothesises.get(s)); // it gets to live on in the new world
+            }
+        }
     }
 
     /**
@@ -128,7 +172,6 @@ public class GeneticAlgorithm {
                     s += "0";
                 }
             }
-            System.out.println("produced - " + s);
             map.put(s, null);
         }
         return map;

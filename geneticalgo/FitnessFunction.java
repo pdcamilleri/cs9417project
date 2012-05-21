@@ -15,7 +15,6 @@ public class FitnessFunction {
         for (int i = 0; i < hypothesis.length(); i++) {
             count += (hypothesis.charAt(i) - '0');
         }
-        System.out.println(count);
 		return count;
 	}
 
