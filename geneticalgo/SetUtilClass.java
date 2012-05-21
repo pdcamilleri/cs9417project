@@ -15,13 +15,27 @@ public class SetUtilClass {
 	 */
 	
 	public static Integer maxFitness(Map<String, Integer> hypothesises) {
-		// TODO: just returns some random element in the map
-		return hypothesises.values().iterator().next();
+        // TODO: 
+        int highest = hypothesises.values().iterator().next(); // start with random element
+
+        for (Integer i : hypothesises.values()) {
+            if (i > highest) {
+                highest = i;
+            }
+        }
+        return highest;
 	}
 
 	public static String maxHypothesis(Map<String, Integer> hypothesises) {
 		// TODO
-		return hypothesises.keySet().iterator().next();
+        String best = hypothesises.keySet().iterator().next(); // start with random element
+
+        for (String s : hypothesises.keySet()) {
+            if (hypothesises.get(s) > hypothesises.get(best)) {
+                best = s;
+            }
+        }
+        return best;
 	}
 
 }

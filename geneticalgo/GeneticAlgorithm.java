@@ -2,6 +2,7 @@ package geneticalgo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Genetic Algorithm implementation
@@ -15,11 +16,10 @@ import java.util.Map;
  * should be able to get to a really good set of hypothesis after repeating a
  * number of times may need to repeat entire algo to avoid local maxima as the
  * initial set of hypothesis are generated at random
- * 
+ *
  */
 
 public class GeneticAlgorithm {
-
 
     /**
      * 
@@ -32,8 +32,7 @@ public class GeneticAlgorithm {
 
         // initialise: P <- p random hypothesis
         // hypothesis: maps bitStrings to fitness
-        Map<String, Integer> hypothesises = new HashMap<String, Integer>();
-        generateRandomBitStrings(hypothesises);
+        Map<String, Integer> hypothesises = getRandomBitStrings(p);
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
@@ -109,8 +108,23 @@ public class GeneticAlgorithm {
     /**
      * TODO should this go here? or in some sort of util class?
      */
-    private void generateRandomBitStrings(Map<String, Integer> hypothesis) {
-        hypothesis.put("000000000000000000000000000", null);
+    private Map<String, Integer> getRandomBitStrings(int p) {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (int i = 0; i < p; i++) {
+//            String bitString = getRandomBitString();
+            Random r = new Random();
+            String s = "";
+            for (int j = 0; j < 10; j++) { // TODO what is the length of each hypo? needs to be a variable
+                if (r.nextBoolean()) {
+                    s += "1";
+                } else {
+                    s += "0";
+                }
+            }
+            System.out.println("produced - " + s);
+            map.put(s, null);
+        }
+        return map;
     }
 
     /**
