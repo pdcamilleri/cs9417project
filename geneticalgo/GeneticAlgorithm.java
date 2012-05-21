@@ -45,8 +45,8 @@ public class GeneticAlgorithm {
         while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
             
             // the set Ps in the comments
-            Map<String, Integer> nextHypothesises = new HashMap<String, Integer>();
-            
+            Map<String, Integer> nextHypothesises = getRandomBitStrings(p);
+
             // select: probabilistically select (1-r)p members of P to add to Ps
             // Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness
             // h,,j,,)
@@ -66,6 +66,11 @@ public class GeneticAlgorithm {
             mutate();
 
             // update: P <- Ps
+            hypothesises = nextHypothesises;
+            // calculate the fitnesses again (TODO: functionize this more since we use it twice)
+            for (String h : hypothesises.keySet()) {
+                hypothesises.put(h, FitnessFunction.fitness(h));
+            }
 
             // evaluate for each h in P, compute fitness(h)
 
