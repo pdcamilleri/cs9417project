@@ -53,6 +53,8 @@ public class GeneticAlgorithm {
             // the set Ps in the comments
             Map<String, Integer> nextHypothesises = new HashMap<String, Integer>(p);
 
+            // TODO: idea, set the mean here, move selectNewGeneration to under mutate method, so that only good hypothesises are in the next generation.
+            // so always moving forward. will need to do some testing of this later to see if the idea is sound.
             int mean = getMean(hypothesises);
             System.out.println("mean - " + mean);
             // select: probabilistically select (1-r)p members of P to add to Ps
