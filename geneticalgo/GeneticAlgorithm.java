@@ -33,23 +33,28 @@ public class GeneticAlgorithm {
 
         // initialise: P <- p random hypothesis
         // hypothesis: maps bitStrings to fitness
-        Map<String, Integer> hypothesises = getRandomBitStrings(p);
+        Map<String, Integer> hypothesises = getRandomBitStrings(p, 100);
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
             hypothesises.put(h, FitnessFunction.fitness(h));
-            System.out.println(hypothesises.get(h) + " - " + h);
+//            System.out.println(hypothesises.get(h) + " - " + h);
         }
         // TODO: combine above steps for efficiency. i.e. get the fitness value
         // as bitStrings are put into the map
 
+        int numberOfGenerations = 0;
+
         // while [max,,h,, fitness(h)] < fitness_threshold
         while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
-            System.out.println("The next generation");
-            
+            numberOfGenerations++;
+//            System.out.println("The next generation - " + numberOfGenerations);
+
             // the set Ps in the comments
             Map<String, Integer> nextHypothesises = new HashMap<String, Integer>(p);
 
+            int mean = getMean(hypothesises);
+            System.out.println("mean - " + mean);
             // select: probabilistically select (1-r)p members of P to add to Ps
             // Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness
             // h,,j,,)
@@ -57,7 +62,7 @@ public class GeneticAlgorithm {
             // the fitness of h,,i,, divided by the sum of all fitnesses of all
             // hypothesis???
             // TODO: need to check the above formula, what does it mean?
-            selectNewGeneration(hypothesises, nextHypothesises); // weed out the weak, keep the strong
+            selectNewGeneration(hypothesises, nextHypothesises, mean); // weed out the weak, keep the strong
 
             // crossover: probabilistically select r-p/2 pairs of hypos from P.
             // produce two offspring for each pair using crossover operator, add
@@ -70,13 +75,15 @@ public class GeneticAlgorithm {
 
             // update: P <- Ps
             hypothesises = nextHypothesises;
-            
+
             // evaluate for each h in P, compute fitness(h)
             // TODO: functionize this more since we use it twice
             for (String h : hypothesises.keySet()) {
                 hypothesises.put(h, FitnessFunction.fitness(h));
-                System.out.println(hypothesises.get(h) + " - " + h);
+//                System.out.println(hypothesises.get(h) + " - " + h);
             }
+
+            System.out.println("improved mean - " + getMean(nextHypothesises));
 
             // done - end of while loop
         }
@@ -86,6 +93,7 @@ public class GeneticAlgorithm {
         String best = SetUtilClass.maxHypothesis(hypothesises);
 
         System.out.println("Best hypo: " + best + " - " + hypothesises.get(best));
+        System.out.println("Took " + numberOfGenerations + " generations");
 
     }
 
@@ -97,8 +105,8 @@ public class GeneticAlgorithm {
      */
     private void mutate(Map<String, Integer> nextHypothesises, int m, int p) {
         // int numberOfHypothesisesToMutate = m * p;
-        int numberOfHypothesisesToMutate = nextHypothesises.keySet().size() / 2;
-        // TODO: just mutate half, naive implementation, until meaning of m is
+        int numberOfHypothesisesToMutate = 1 + nextHypothesises.keySet().size() / 4;
+        // TODO: just mutate quarter, naive implementation, until meaning of m is
         // revealed.
         // m == mutation rate? a small value like 0.1?
 
@@ -141,14 +149,8 @@ public class GeneticAlgorithm {
      * @param nextHypothesises 
      * @param hypothesises 
      */
-    private void selectNewGeneration(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises) {
+    private void selectNewGeneration(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int mean) {
         // only adding the best 50% to the next generation of super soldiers.
-        int mean = 0;
-        for (Integer i : hypothesises.values()) {
-            mean += i;
-        }
-        mean /= hypothesises.values().size();
-        
         for (String s : hypothesises.keySet()) {
             if (hypothesises.get(s) >= mean) { // we have a strong hypothesis
                 nextHypothesises.put(s, hypothesises.get(s)); // it gets to live on in the new world
@@ -156,16 +158,25 @@ public class GeneticAlgorithm {
         }
     }
 
+    private int getMean(Map<String, Integer> hypothesises) {
+        int mean = 0;
+        for (Integer i : hypothesises.values()) {
+            mean += i;
+        }
+        mean /= hypothesises.values().size();
+        return mean;
+    }
+
     /**
      * TODO should this go here? or in some sort of util class?
      */
-    private Map<String, Integer> getRandomBitStrings(int p) {
+    private Map<String, Integer> getRandomBitStrings(int p, int lengthOfBitStrings) {
         Map<String, Integer> map = new HashMap<String, Integer>();
         for (int i = 0; i < p; i++) {
 //            String bitString = getRandomBitString();
             Random r = new Random();
             String s = "";
-            for (int j = 0; j < 10; j++) { // TODO what is the length of each hypo? needs to be a variable
+            for (int j = 0; j < lengthOfBitStrings; j++) { // TODO what is the length of each hypo? needs to be a variable
                 if (r.nextBoolean()) {
                     s += "1";
                 } else {
@@ -189,7 +200,7 @@ public class GeneticAlgorithm {
     private void crossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
         int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
-        String[] genePool = new String[10];
+        String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
         // perform crossovers
         for (int i = 0; i < numPairs; i++) {
@@ -200,9 +211,9 @@ public class GeneticAlgorithm {
             int crossoverPoint = random.nextInt(mother.length());
             
             // let the mating begin!
-            // TODO: check this. as it stands, last bit of mother will always be accepted. guess it makes sense, feels wrong tho
-            String boy = father.substring(0, crossoverPoint - 1) + mother.substring(crossoverPoint);
-            String girl = mother.substring(0, crossoverPoint - 1) + father.substring(crossoverPoint);
+            // TODOls wrong tho
+            String boy = father.substring(0, crossoverPoint) + mother.substring(crossoverPoint);
+            String girl = mother.substring(0, crossoverPoint) + father.substring(crossoverPoint);
             nextHypothesises.put(boy, null);
             nextHypothesises.put(girl, null);
         }
