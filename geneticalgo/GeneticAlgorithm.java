@@ -1,6 +1,5 @@
 package geneticalgo;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -66,10 +65,14 @@ public class GeneticAlgorithm {
             // TODO: need to check the above formula, what does it mean?
             selectNewGeneration(hypothesises, nextHypothesises, mean); // weed out the weak, keep the strong
 
-            // crossover: probabilistically select r-p/2 pairs of hypos from P.
-            // produce two offspring for each pair using crossover operator, add
+            // singlePointCrossover: probabilistically select r-p/2 pairs of hypos from P.
+            // produce two offspring for each pair using singlePointCrossover operator, add
             // to Ps
-            crossover(hypothesises, nextHypothesises, p, r);
+            singlePointCrossover(hypothesises, nextHypothesises, p, r);
+            
+//            uniformCrossover(hypothesises, nextHypothesises, p, r);
+
+//            twoPointCrossover(hypothesises, nextHypothesises, p, r);
 
             // mutate: invert a randomly selected bit in m * p random hypos from
             // set Ps
@@ -191,15 +194,15 @@ public class GeneticAlgorithm {
     }
 
     /**
-     * crossover: probabilistically select r-p/2 pairs of hypos from P.
-     * produce two offspring for each pair using crossover operator, add
+     * singlePointCrossover: probabilistically select r-p/2 pairs of hypos from P.
+     * produce two offspring for each pair using singlePointCrossover operator, add
      * to Ps
      * @param hypothesises
      * @param nextHypothesises
      * @param r 
      * @param p 
      */
-    private void crossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
+    private void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
         int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
@@ -213,9 +216,78 @@ public class GeneticAlgorithm {
             int crossoverPoint = random.nextInt(mother.length());
             
             // let the mating begin!
-            // TODOls wrong tho
             String boy = father.substring(0, crossoverPoint) + mother.substring(crossoverPoint);
             String girl = mother.substring(0, crossoverPoint) + father.substring(crossoverPoint);
+            nextHypothesises.put(boy, null);
+            nextHypothesises.put(girl, null);
+        }
+    }
+
+
+    /**
+     * non-contiguous bits from parents in singlePointCrossover.
+     * TODO: uses most of the same code as singlePointCrossover. need to simplify
+     * @param hypothesises
+     * @param nextHypothesises
+     * @param p
+     * @param r
+     */
+    private void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
+        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        Random random = new Random();
+        String[] genePool = new String[hypothesises.keySet().size()];
+        hypothesises.keySet().toArray(genePool);
+        // perform crossovers
+        for (int i = 0; i < numPairs; i++) {
+            // select two random parents (note, mother == father is possible)
+            // TODO: check whether or not the above is a problem. probably will be, since overpopulating pool with the same gene.
+            String mother = genePool[random.nextInt(genePool.length)];
+            String father = genePool[random.nextInt(genePool.length)];
+            String boy  = "";
+            String girl = "";
+
+            for (int j = 0; j < mother.length(); j++) {
+                if (random.nextBoolean()) {
+                    boy  += mother.charAt(j);
+                    girl += father.charAt(j);
+                } else {
+                    girl += mother.charAt(j);
+                    boy  += father.charAt(j);
+                }
+            }
+            nextHypothesises.put(boy, null);
+            nextHypothesises.put(girl, null);
+        }
+    }
+
+    private void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
+        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        Random random = new Random();
+        String[] genePool = new String[hypothesises.keySet().size()];
+        hypothesises.keySet().toArray(genePool);
+        // perform crossovers
+        for (int i = 0; i < numPairs; i++) {
+            // select two random parents (note, mother == father is possible)
+            // TODO: check whether or not the above is a problem. probably will be, since overpopulating pool with the same gene.
+            String mother = genePool[random.nextInt(genePool.length)];
+            String father = genePool[random.nextInt(genePool.length)];
+
+            // TODO: ok, this code is ugly. yea well, youre ugly too.
+            int firstCrossoverPoint = 0, secondCrossoverPoint = 0;
+            // find two distinct
+            int a = random.nextInt(mother.length());
+            int b = random.nextInt(mother.length());
+            if (a > b) {
+                firstCrossoverPoint = b;
+                secondCrossoverPoint = a;
+            } else if (a < b) {
+                firstCrossoverPoint = a;
+                secondCrossoverPoint = b;
+            }
+
+            // let the mating begin!
+            String boy = father.substring(0, firstCrossoverPoint) + mother.substring(firstCrossoverPoint, secondCrossoverPoint) + father.substring(secondCrossoverPoint);
+            String girl = mother.substring(0, firstCrossoverPoint) + father.substring(firstCrossoverPoint, secondCrossoverPoint) + mother.substring(secondCrossoverPoint);
             nextHypothesises.put(boy, null);
             nextHypothesises.put(girl, null);
         }
