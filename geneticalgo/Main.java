@@ -1,5 +1,7 @@
 package geneticalgo;
 
+import mushroom.MushroomSpecification;
+
 public class Main {
 	
 	public static void main(String[] args) {
@@ -12,8 +14,14 @@ public class Main {
 		
 		// 3) Do Genetic Algo Magic
 		
-		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
-		geneticAlgorithm.execute(90, 100, 0, 0);
+		ProblemSpecification problemSpecification;
+		
+		if (true) { //put in some condition, like command line arguments?
+		    problemSpecification = new MushroomSpecification();
+		}
+		
+		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
+		geneticAlgorithm.execute(90, 100, 200, 0);
 		
 		System.out.println("Closing program...");
 	}

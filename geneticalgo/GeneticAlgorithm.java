@@ -20,6 +20,12 @@ import java.util.Random;
  */
 
 public class GeneticAlgorithm {
+    
+    ProblemSpecification problemSpecification;
+    
+    public GeneticAlgorithm(ProblemSpecification problemSpecification) {
+        this.problemSpecification = problemSpecification;
+    }
 
     /**
      * 
@@ -36,7 +42,7 @@ public class GeneticAlgorithm {
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
-            hypothesises.put(h, FitnessFunction.fitness(h));
+            hypothesises.put(h, problemSpecification.getFitnessFunction().getFitness(h));
 //            System.out.println(hypothesises.get(h) + " - " + h);
         }
         // TODO: combine above steps for efficiency. i.e. get the fitness value
@@ -84,7 +90,7 @@ public class GeneticAlgorithm {
             // evaluate for each h in P, compute fitness(h)
             // TODO: functionize this more since we use it twice
             for (String h : hypothesises.keySet()) {
-                hypothesises.put(h, FitnessFunction.fitness(h));
+                hypothesises.put(h, problemSpecification.getFitnessFunction().getFitness(h));
 //                System.out.println(hypothesises.get(h) + " - " + h);
             }
 
