@@ -22,7 +22,29 @@ public class MushoomFitnessFunction implements FitnessFunction {
     };
 
     private char[][] attributes = {
-        { 'b', 'c', 'f', 'k', 's', 'x'}
+        { 'b', 'c', 'f', 'k', 's', 'x'},
+        { 'f', 'g', 's', 'y'},
+        { 'b', 'c', 'e', 'g', 'n', 'p', 'r', 'u', 'w', 'y'},
+        { 'f', 't'},
+        { 'a', 'c', 'f', 'l', 'm', 'n', 'p', 's', 'y'},
+        { 'a', 'd', 'f', 'n'},
+        { 'c', 'd', 'w'},
+        { 'b', 'n'},
+        { 'b', 'e', 'g', 'h', 'k', 'n', 'o', 'p', 'r', 'u', 'w', 'y'},
+        { 'e', 't'},
+        { 'b', 'c', 'e', 'r', 'u', 'z'},
+        { 'f', 'k', 's', 'y'},
+        { 'f', 'k', 's', 'y'},
+        { 'b', 'c', 'e', 'g', 'n', 'o', 'p', 'w', 'y'},
+        { 'b', 'c', 'e', 'g', 'n', 'o', 'p', 'w', 'y'},
+        { 'p', 'u'},
+        { 'n', 'o', 'w', 'y'},
+        { 'n', 'o', 't'},
+        { 'c', 'e', 'f', 'l', 'n', 'p', 's', 'z'},
+        { 'b', 'h', 'k', 'n', 'o', 'r', 'u', 'w', 'y'},
+        { 'a', 'c', 'n', 's', 'v', 'y'},
+        { 'd', 'g', 'l', 'm', 'p', 'u', 'w'},
+        { 'e', 'p'},
     };
 
     // write a parsers to read in and construct this array?
@@ -44,26 +66,27 @@ public class MushoomFitnessFunction implements FitnessFunction {
 ////    private Map countryCapitals = ArrayUtils.toMap(countries);
 ////    import org.apache.commons.lang.ArrayUtils;
 
-    private final int LENGTH_OF_BITSTRING = 117;
+    private final int LENGTH_OF_BITSTRING = 127; // 117, 127 without p/non-p
     private final int NUMBER_OF_ATTRIBUTES = 22;
 
 
     // 1010101101011010101010101001011010101010110101010...
     // AAAAAABBBBCCCCCCCCCCDDEEEEEEEEEFFFFGGGHHIIIIIIIII...
     public int getFitness(String hypothesis) {
+        
 
-        for (int k = 0; k < trainingExamples.length; k++) {
-            for (int i = 0; i < trainingExamples[k].length; i++) { // trainingexamples[k] will always be the same....can optimize this
-                char value = trainingExamples[k][i];
-                int j;
-                for (j = 0; j < attributes[i].length; j++) {
-                    if (attributes[i][j] == value) break;
-                }
-                System.out.println("position is " + j);
-                break; // have to break here since ive only put one value inside of the attributes array
-            }
-        }
 
+//        for (int k = 0; k < trainingExamples.length; k++) {
+//            for (int i = 0; i < trainingExamples[k].length; i++) { // trainingexamples[k] will always be the same....can optimize this
+//                char value = trainingExamples[k][i];
+//                int j;
+//                for (j = 0; j < attributes[i].length; j++) {
+//                    if (attributes[i][j] == value) break;
+//                }
+//                System.out.println("position is " + j);
+//                break; // have to break here since ive only put one value inside of the attributes array
+//            }
+//        }
 
 
 //        char[] attributeDecoding = new char[NUMBER_OF_ATTRIBUTES];
@@ -80,7 +103,51 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //
 //        }
 
-        return 0;
+        //
+      int count = 0;
+      for (int i = 0; i < hypothesis.length(); i++) {
+              count += (hypothesis.charAt(i) - '0');
+      }
+      return count;
+//        return 0;
+    }
+    
+    /*
+     * just so i can test out the test function
+     */
+    public static void main(String[] args) {
+        MushoomFitnessFunction mff = new MushoomFitnessFunction();
+        String mostGeneralHypoPossible = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+        System.out.println(mff.test(mostGeneralHypoPossible,
+                new char[]{'b','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'}));
+    }
+    
+    /**
+     * tests whether or not a particular hypothesis is consistent with a particular training example
+     * @param hypothesis
+     */
+    private boolean test(String hypothesis, char[] example) {
+        // create a blank hypothesis
+        char[] mask = new char[example.length];
+        for (int i = 0; i < mask.length; i++) {
+            mask[i] = '0';
+        }
+        
+        // create a bitstring from the training example
+        int position = 0;
+        for (int i = 0; i < example.length; i++) { // example length will always be the same....can optimize this
+            char value = example[i];
+            int j;
+            for (j = 0; j < attributes[i].length; j++) {
+                if (attributes[i][j] == value) break;
+            }
+            System.out.println(j);
+            if (hypothesis.charAt(position + j) != '1') {
+                return false;
+            }
+            position += attributes[i].length; // update our position to skip over this attribute
+        }
+        return true;
     }
     
     /**
