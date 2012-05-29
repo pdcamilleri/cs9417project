@@ -38,7 +38,7 @@ public class GeneticAlgorithm {
 
         // initialise: P <- p random hypothesis
         // hypothesis: maps bitStrings to fitness
-        Map<String, Integer> hypothesises = getRandomBitStrings(p, 100);
+        Map<String, Integer> hypothesises = getRandomBitStrings(p, 117);
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
@@ -103,8 +103,8 @@ public class GeneticAlgorithm {
         // return the hypo with highest fitness in P
         String best = SetUtilClass.maxHypothesis(hypothesises);
 
-        System.out.println("Best hypo: " + best + " - " + hypothesises.get(best));
         System.out.println("Took " + numberOfGenerations + " generations");
+        System.out.println("Best hypo: " + best + " - " + hypothesises.get(best));
 
     }
 

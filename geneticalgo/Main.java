@@ -21,7 +21,7 @@ public class Main {
 		}
 		
 		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
-		geneticAlgorithm.execute(90, 100, 200, 0);
+		geneticAlgorithm.execute(117, 100, 200, 0);
 		
 		System.out.println("Closing program...");
 	}
