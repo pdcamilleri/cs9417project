@@ -208,7 +208,7 @@ public class GeneticAlgorithm {
      * @param p 
      */
     private void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -238,7 +238,7 @@ public class GeneticAlgorithm {
      * @param r
      */
     private void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -266,7 +266,7 @@ public class GeneticAlgorithm {
     }
 
     private void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);

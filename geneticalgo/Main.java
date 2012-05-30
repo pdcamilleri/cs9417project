@@ -13,7 +13,7 @@ public class Main {
 		// 3) Do Genetic Algo Magic
 		
 		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
-		geneticAlgorithm.execute(80, 100, 60, 1);
+		geneticAlgorithm.execute(80, 100, 5, 1);
 		
 		System.out.println("Closing program...");
 	}
