@@ -139,10 +139,14 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //        }
 //        System.out.println(count + " - " + countz);
 
-        String specificString =
+        String specificStringa =
 "11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+        String specificStringb =
+"11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
-        System.out.println(mff.hypothesisToReadableString(specificString));
+        System.out.println(mff.hypothesisToReadableString(specificStringa));
+        System.out.println(mff.hypothesisToGrepString(specificStringa));
+        System.out.println(mff.hypothesisToGrepString(specificStringb));
     }
     
     /**
@@ -237,6 +241,39 @@ public class MushoomFitnessFunction implements FitnessFunction {
             toPrint.append(" => " + 'p');
         } else {
             toPrint.append(" => " + 'e');
+        }
+
+        // handle last attribute p/e separately
+        return toPrint;
+    }
+
+    private StringBuffer hypothesisToGrepString(String hypothesis) {
+        int position = 0;
+        StringBuffer toPrint = new StringBuffer("");
+        for (int i = 0; i < attributes.length - 1; i++) {
+            toPrint.append("");
+            boolean addedSomething = false;
+            for (int j = 0; j < attributes[i].length; j++) {
+                if (hypothesis.charAt(position + j) == '1') {
+                    if (!addedSomething) {
+                        toPrint.append("[");
+                    }
+                    toPrint.append(attributes[i][j]);
+                    addedSomething = true;
+                }
+            }
+            position += attributes[i].length;
+            if (addedSomething) {
+                toPrint.append("]");
+            } else {
+                toPrint.append('.');
+            }
+        }
+
+        if (hypothesis.charAt(position + 1) == '1') {
+            toPrint.append("[p]");
+        } else {
+            toPrint.append("[e]");
         }
 
         // handle last attribute p/e separately
