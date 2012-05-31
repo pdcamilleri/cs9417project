@@ -121,23 +121,28 @@ public class MushoomFitnessFunction implements FitnessFunction {
      */
     public static void main(String[] args) throws IOException {
         
-        Parser parser = new MushroomParser();
-        char[][] examples = parser.parse("src/datasets/mushroom.cleaned");
-        
+//        Parser parser = new MushroomParser();
+//        char[][] examples = parser.parse("src/datasets/mushroom.cleaned");
+//
         MushoomFitnessFunction mff = new MushoomFitnessFunction();
-        String mostGeneralHypoPossible = 
-"11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-        System.out.println(mff.test(mostGeneralHypoPossible,
-                new char[]{'b','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','e'}));
-        int count = 0, countz = 0;
-        for (int i = 0; i < examples.length; i++) {
-            if (mff.test(mostGeneralHypoPossible, examples[i])) {
-                count++;
-            } else {
-                countz++;
-            }
-        }
-        System.out.println(count + " - " + countz);
+//        String mostGeneralHypoPossible =
+//"11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+//        System.out.println(mff.test(mostGeneralHypoPossible,
+//                new char[]{'b','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','e'}));
+//        int count = 0, countz = 0;
+//        for (int i = 0; i < examples.length; i++) {
+//            if (mff.test(mostGeneralHypoPossible, examples[i])) {
+//                count++;
+//            } else {
+//                countz++;
+//            }
+//        }
+//        System.out.println(count + " - " + countz);
+
+        String specificString =
+"11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+
+        System.out.println(mff.hypothesisToReadableString(specificString));
     }
     
     /**
@@ -195,5 +200,47 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //        return count;
 //    }
 
+    /*
+    write a function that takes in a String hypothesis and outputs a readable representation of that rule like
+
+    (a || b) && (c) && (d) && (e || f || g) ...
+
+    also generate a grepable format
+
+    cat mushroom.cleaned | sed -e "s/[^a-zA-Z?]//g" | grep "[ab][c][d][efg]..."
+
+    which can be used in combination with " | wc" to see the % correct (just to confirm the GA's % correct is accurate
+     */
+    private StringBuffer hypothesisToReadableString(String hypothesis) {
+        int position = 0;
+        StringBuffer toPrint = new StringBuffer("(");
+        for (int i = 0; i < attributes.length - 1; i++) {
+            toPrint.append("");
+            boolean addedSomething = false;
+            for (int j = 0; j < attributes[i].length; j++) {
+                if (hypothesis.charAt(position + j) == '1') {
+                    toPrint.append(attributes[i][j] + " || ");
+                    addedSomething = true;
+                }
+            }
+            position += attributes[i].length;
+            if (addedSomething) {
+                toPrint.delete(toPrint.length() - 4, toPrint.length());
+                toPrint.append(") && (");
+            }
+            // if # attributes == number of attributes going to be printed then omit printing (its too general)
+        }
+
+        toPrint.delete(toPrint.length() - 4, toPrint.length());
+
+        if (hypothesis.charAt(position + 1) == '1') {
+            toPrint.append(" => " + 'p');
+        } else {
+            toPrint.append(" => " + 'e');
+        }
+
+        // handle last attribute p/e separately
+        return toPrint;
+    }
 
 }
