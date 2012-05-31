@@ -38,7 +38,7 @@ public class GeneticAlgorithm {
 
         // initialise: P <- p random hypothesis
         // hypothesis: maps bitStrings to fitness
-        Map<String, Integer> hypothesises = getRandomBitStrings(p, 117);
+        Map<String, Integer> hypothesises = getRandomBitStrings(p, 128);
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {

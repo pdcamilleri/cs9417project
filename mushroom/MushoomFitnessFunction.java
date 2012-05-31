@@ -24,7 +24,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
             {'x','s','y','t','a','f','c','b','k','e','c','s','s','w','w','p','w','o','p','n','n','g','e'}
     };
     
-
+    // TODO maybe parse this from arff file??? 
     private char[][] attributes = {
         { 'b', 'c', 'f', 'k', 's', 'x'},
         { 'f', 'g', 's', 'y'},
@@ -51,69 +51,34 @@ public class MushoomFitnessFunction implements FitnessFunction {
         { 'e', 'p'},
     };
 
-    // write a parsers to read in and construct this array?
-//    private char[] attributes = {
-//            { 'b', 'c', 'f', 'k', 's', 'x'},
-//            ...
-//            { 'e', 'p'}
-//    };
-
-//    private String[][] capShape = {
-//            { "b", "100000",},
-//            { "c", "010000" },
-//            { "f", "001000" },
-//            { "k", "000100" },
-//            { "s", "000010" },
-//            { "x", "000001" }
-//    };
-//
-////    private Map countryCapitals = ArrayUtils.toMap(countries);
-////    import org.apache.commons.lang.ArrayUtils;
-
+    private char[][] examples;
+    
     private final int LENGTH_OF_BITSTRING = 128; // 117, 127 without p/non-p, 128 inc ?
     private final int NUMBER_OF_ATTRIBUTES = 22;
 
+    public MushoomFitnessFunction() {
 
-    // 1010101101011010101010101001011010101010110101010...
-    // AAAAAABBBBCCCCCCCCCCDDEEEEEEEEEFFFFGGGHHIIIIIIIII...
+        Parser parser = new MushroomParser();
+        try {
+            examples = parser.parse("src/datasets/mushroom.cleaned");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getFitness(String hypothesis) {
-        
-
-
-//        for (int k = 0; k < trainingExamples.length; k++) {
-//            for (int i = 0; i < trainingExamples[k].length; i++) { // trainingexamples[k] will always be the same....can optimize this
-//                char value = trainingExamples[k][i];
-//                int j;
-//                for (j = 0; j < attributes[i].length; j++) {
-//                    if (attributes[i][j] == value) break;
-//                }
-//                System.out.println("position is " + j);
-//                break; // have to break here since ive only put one value inside of the attributes array
-//            }
-//        }
-
-
-//        char[] attributeDecoding = new char[NUMBER_OF_ATTRIBUTES];
-//
-//        for (int i = 0, position = 0; i < NUMBER_OF_ATTRIBUTES; i++) {
-//            String attribute = hypothesis.substring(position, position + lengthsOfAttributes[i]);
-//
-//            System.out.println(i + ": " + attribute);
-//            // move position along, ready for the next attribute
-//            position += lengthsOfAttributes[i];
-//
-//            // pass bitstring of this attribute to some decoder that will map bitstrings to the correct value. hardcoded ofcourse
-//            attributeDecoding[i] = attribute.charAt(0); // need the mapping function in here
-//
-//        }
-
-        //
-      int count = 0;
-      for (int i = 0; i < hypothesis.length(); i++) {
-              count += (hypothesis.charAt(i) - '0');
-      }
-      return count;
-//        return 0;
+//        System.out.println(this.hypothesisToGrepString(hypothesis));
+        System.out.println((hypothesis));
+        System.out.println("11111110000000000000000000000000011010111000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
+        int correct = 0;
+        for (int i = 0; i < examples.length; i++) {
+            if (test(hypothesis, examples[i])) {
+                correct++;
+            }
+        }
+//        System.out.println((correct * 100) / examples.length);
+        System.out.println((correct) + " - " + hypothesis);
+        return (correct * 100) / examples.length;
     }
     
     /*
@@ -142,11 +107,17 @@ public class MushoomFitnessFunction implements FitnessFunction {
         String specificStringa =
 "11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
         String specificStringb =
-"11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+"11111110000000000000001111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        String specificStringc =
+"00000000000000000000000110101110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
 
+        
         System.out.println(mff.hypothesisToReadableString(specificStringa));
         System.out.println(mff.hypothesisToGrepString(specificStringa));
         System.out.println(mff.hypothesisToGrepString(specificStringb));
+        System.out.println(mff.hypothesisToGrepString(specificStringc));
+        System.out.println("c" + mff.hypothesisToReadableString(specificStringc));
+        System.out.println("fitness" + mff.getFitness(specificStringc));
     }
     
     /**
@@ -165,10 +136,10 @@ public class MushoomFitnessFunction implements FitnessFunction {
         for (int i = 0; i < example.length; i++) { // example length will always be the same....can optimize this
             char value = example[i];
             int j;
-            for (j = 0; j < attributes[i].length - 1; j++) { // the last attribute, p/e is a special case. 2 attributes, 1 bit
+            for (j = 0; j < attributes[i].length - 1; j++) { // the last attribute, p/e is a special case, hence the -1
                 if (attributes[i][j] == value) break;
             }
-            if (hypothesis.charAt(position + j) != '1') {
+            if (hypothesis.charAt(position + j) != '1' && existsAnotherOne(hypothesis, position, j, i)) {
                 return false;
             }
             position += attributes[i].length; // update our position to skip over this attribute
@@ -186,7 +157,29 @@ public class MushoomFitnessFunction implements FitnessFunction {
         }
         return true;
     }
-    
+
+    /**
+     * we only want to return false for a hypothesis with respect to a training example
+     * if we have a 1 in the training example (in bitString format) and a 1 in the hypothesis
+     * that belong to the same attribute section, but the 1's dont line up. In other words, the hypothesis says
+     * we should have value v1 for attribute A but the training examples say we should have value v2 for A.
+     * BUT in the case where the hypothesis suggest no value for A, that is, that attribute section contains
+     * all 0's, (ie, this hypo is not dependent on that) then we should not return false, since we dont care
+     * that the training example requires v2.
+     * @param hypothesis
+     * @param position
+     * @param j
+     * @param i
+     * @return
+     */
+    private boolean existsAnotherOne(String hypothesis, int position, int j,
+            int i) {
+        for (int a = 0; a < attributes[i].length; a++) {
+            if (hypothesis.charAt(position + a) == '1' && j != a) return true; // except j
+        }
+        return false;
+    }
+
     /**
      * takes a bitString representing a hypothesis and decomposes it down so its fitness can be calculated. 
      */
