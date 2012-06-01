@@ -52,6 +52,8 @@ public class MushoomFitnessFunction implements FitnessFunction {
     };
 
     private char[][] examples;
+    private char[][] poisonousExamples;
+    private char[][] edibleExamples;
     
     private final int LENGTH_OF_BITSTRING = 128; // 117, 127 without p/non-p, 128 inc ?
     private final int NUMBER_OF_ATTRIBUTES = 22;
@@ -61,24 +63,63 @@ public class MushoomFitnessFunction implements FitnessFunction {
         Parser parser = new MushroomParser();
         try {
             examples = parser.parse("src/datasets/mushroom.cleaned");
+            sortExamples(examples);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public int getFitness(String hypothesis) {
-//        System.out.println(this.hypothesisToGrepString(hypothesis));
-        System.out.println((hypothesis));
-        System.out.println("11111110000000000000000000000000011010111000000000000000000000000000000000000000000000000000000000000000000000000000000000000001");
-        int correct = 0;
+    /**
+     * sorts training examples into poisonous and edible sets.
+     */
+    private void sortExamples(char[][] examples) {
+        // find the number of instances in each set
+        // so we can create the array
+        int numberOfPoisonousExamples = 0;
         for (int i = 0; i < examples.length; i++) {
-            if (test(hypothesis, examples[i])) {
+            if (examples[i][examples[i].length - 1] == 'p') {
+                numberOfPoisonousExamples++;
+            }
+        }
+        poisonousExamples = new char[numberOfPoisonousExamples][examples[0].length];
+        edibleExamples = new char[examples.length - numberOfPoisonousExamples][examples[0].length];
+        
+        int poisonousPosition = 0;
+        int ediblePosition = 0;
+        for (int i = 0; i < examples.length; i++) {
+            if (examples[i][examples[i].length - 1] == 'p') {
+                poisonousExamples[poisonousPosition] = examples[i];
+                poisonousPosition++;
+            } else {
+                edibleExamples[ediblePosition] = examples[i];
+                ediblePosition++;
+            }
+        }
+        
+    }
+
+    public int getFitness(String hypothesis) {
+        char[][] validExamples = examples; // just setting it so eclipse wont complain
+        int correct = 0;
+        
+        char lastChar = hypothesis.charAt(hypothesis.length() - 1);
+        if (lastChar == '1') {
+            validExamples = poisonousExamples;
+//            correct += edibleExamples.length;
+        } else if (lastChar == '0') {
+            validExamples = edibleExamples;
+//            correct += poisonousExamples.length;
+        } else {
+            ((String) null).length(); // crash program, shouldnt get here
+        }
+        
+        for (int i = 0; i < validExamples.length; i++) {
+            if (test(hypothesis, validExamples[i])) {
                 correct++;
             }
         }
-//        System.out.println((correct * 100) / examples.length);
-        System.out.println((correct) + " - " + hypothesis);
-        return (correct * 100) / examples.length;
+//        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
+        return (correct * 10000) / validExamples.length;
     }
     
     /*
@@ -240,7 +281,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
         return toPrint;
     }
 
-    private StringBuffer hypothesisToGrepString(String hypothesis) {
+    public StringBuffer hypothesisToGrepString(String hypothesis) {
         int position = 0;
         StringBuffer toPrint = new StringBuffer("");
         for (int i = 0; i < attributes.length - 1; i++) {

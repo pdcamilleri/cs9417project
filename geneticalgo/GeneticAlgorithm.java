@@ -52,6 +52,9 @@ public class GeneticAlgorithm {
 
         // while [max,,h,, fitness(h)] < fitness_threshold
         while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
+            System.out.print(problemSpecification.getFitnessFunction().
+                    hypothesisToGrepString(SetUtilClass.maxHypothesis(hypothesises)) 
+                            + " - " + SetUtilClass.maxFitness(hypothesises));
             numberOfGenerations++;
 //            System.out.println("The next generation - " + numberOfGenerations);
 
@@ -94,7 +97,7 @@ public class GeneticAlgorithm {
 //                System.out.println(hypothesises.get(h) + " - " + h);
             }
 
-            System.out.println("improved mean - " + getMean(nextHypothesises));
+//            System.out.println("improved mean - " + getMean(nextHypothesises));
 
             // done - end of while loop
         }
@@ -188,7 +191,7 @@ public class GeneticAlgorithm {
             Random r = new Random();
             String s = "";
             for (int j = 0; j < lengthOfBitStrings; j++) { // TODO what is the length of each hypo? needs to be a variable
-                if (r.nextBoolean()) {
+                if (r.nextInt(10) != 0) {
                     s += "1";
                 } else {
                     s += "0";
