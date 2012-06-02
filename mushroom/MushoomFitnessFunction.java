@@ -119,12 +119,22 @@ public class MushoomFitnessFunction implements FitnessFunction {
         int correct = testHypothesisAgainstExamples(hypothesis, validExamples);
         
         // also need to count up number of false positives
-        correct += invalidExamples.length - testHypothesisAgainstExamples(alternateHypothesis, invalidExamples);
+        int incorrect = invalidExamples.length - testHypothesisAgainstExamples(alternateHypothesis, invalidExamples);
 //        System.out.println(invalidExamples.length + " - " + testHypothesisAgainstExamples(alternateHypothesis, invalidExamples) + 
 //                " = " + incorrect);
         
 //        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
-        if (correct > 1) System.out.println((correct * 10000) / validExamples.length + " - " + (hypothesisToGrepString(hypothesis)));
+//        System.out.println(correct + " - " + incorrect);
+//        System.out.println(alternateHypothesis);
+//        System.out.println(hypothesisToGrepString(alternateHypothesis));
+        correct += incorrect;
+        if (correct > 1) {
+            System.out.print(((double) (((correct) * 100) / examples.length)) + "%");
+            System.out.print(" (" + correct + "/" + examples.length + ") -->> " + (hypothesisToGrepString(hypothesis)));
+            System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
+        }
+//        normalise so that e == p?
+//        System.out.println("returning for above hypo " + (((correct + incorrect) * 10000) / examples.length));
         return ((correct) * 10000) / examples.length;
     }
     
@@ -169,14 +179,24 @@ public class MushoomFitnessFunction implements FitnessFunction {
 "00000000000000000000000110101110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
         
         // first complete run of GA
-        String[] runs = {
-                "00000000000000000000001011011110000000000000000000000011110010000000000000000000000000000000000000000000000000000000000000000000",
-                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000001",
-                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001",
-        };
+//        String[] runs = {
+//                "00000000000000000000001011011110000000000000000000000011110010000000000000000000000000000000000000000000000000000000000000000000",
+//                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000001",
+//        };
+//        
+//        for (int i = 0; i < runs.length; i++) {
+//            mff.displayRunInfo(runs[i]);
+//        }
         
-        for (int i = 0; i < runs.length; i++) {
-            mff.displayRunInfo(runs[i]);
+        String[] badRuns = {
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001",
+                "00000010000000000000010000000000010100010000000000000000010000000000000000010000000010000000000000000010000100000000000000100001",
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000000",
+                "00000000000000000000000001010100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010",
+                "00000000000000000000000010101111111100000000000000000000000000000000000000000000000000000001000000000000000000000000000000000001",
+        };
+        for (int i = 0; i < badRuns.length; i++) {
+            mff.displayRunInfo(badRuns[i]);
         }
         
 //        { 'a', 'c', 'f', 'l', 'm', 'n', 'p', 's', 'y'}, "aflnpsy" ==>> if odor = {c or m} and stalk-root = { u or z } => edible

@@ -84,10 +84,7 @@ public class GeneticAlgorithm {
             // produce two offspring for each pair using singlePointCrossover operator, add
             // to Ps
             
-            System.out.println("crossoveersize - " + nextHypothesises.size());
             singlePointCrossover(hypothesises, nextHypothesises, p, r);
-            System.out.println("crossoveersize - " + hypothesises.size());
-            System.out.println("crossoveersize - " + nextHypothesises.size());
             
 //            uniformCrossover(hypothesises, nextHypothesises, p, r);
 
@@ -95,13 +92,10 @@ public class GeneticAlgorithm {
 
             // mutate: invert a randomly selected bit in m * p random hypos from
             // set Ps
-            System.out.println("mutatesize - " + nextHypothesises.size());
             mutate(nextHypothesises, m, p);
-            System.out.println("mutatesize - " + nextHypothesises.size());
 
             // update: P <- Ps
             hypothesises = nextHypothesises;
-            System.out.println("p<ps size - " + hypothesises.size());
 
             // evaluate for each h in P, compute fitness(h)
             // TODO: functionize this more since we use it twice
