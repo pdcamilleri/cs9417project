@@ -50,7 +50,6 @@ public class MushoomFitnessFunction implements FitnessFunction {
         { 'd', 'g', 'l', 'm', 'p', 'u', 'w'},
         { 'e', 'p'},
     };
-
     private char[][] examples;
     private char[][] poisonousExamples;
     private char[][] edibleExamples;
@@ -100,29 +99,45 @@ public class MushoomFitnessFunction implements FitnessFunction {
 
     public int getFitness(String hypothesis) {
         char[][] validExamples = examples; // just setting it so eclipse wont complain
-        int correct = 0;
+        char[][] invalidExamples = examples; // just setting it so eclipse wont complain
         
         char lastChar = hypothesis.charAt(hypothesis.length() - 1);
+        String alternateHypothesis = hypothesis.substring(0, hypothesis.length() - 1);
         if (lastChar == '1') {
             validExamples = poisonousExamples;
-//            correct += edibleExamples.length;
+            invalidExamples = edibleExamples;
+            alternateHypothesis += '0';
         } else if (lastChar == '0') {
             validExamples = edibleExamples;
-//            correct += poisonousExamples.length;
+            invalidExamples = poisonousExamples;
+            alternateHypothesis += '1';
         } else {
             ((String) null).length(); // crash program, shouldnt get here
         }
         
+        // count up the number of true positives
+        int correct = testHypothesisAgainstExamples(hypothesis, validExamples);
+        
+        // also need to count up number of false positives
+        correct += invalidExamples.length - testHypothesisAgainstExamples(alternateHypothesis, invalidExamples);
+//        System.out.println(invalidExamples.length + " - " + testHypothesisAgainstExamples(alternateHypothesis, invalidExamples) + 
+//                " = " + incorrect);
+        
+//        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
+        if (correct > 1) System.out.println((correct * 10000) / validExamples.length + " - " + (hypothesisToGrepString(hypothesis)));
+        return ((correct) * 10000) / examples.length;
+    }
+    
+    private int testHypothesisAgainstExamples(String hypothesis, char[][] validExamples) {
+        int correct = 0;
         for (int i = 0; i < validExamples.length; i++) {
             if (test(hypothesis, validExamples[i])) {
                 correct++;
             }
         }
-//        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
-        if (correct > 1) System.out.println((correct * 10000) / validExamples.length + " - " + (hypothesisToGrepString(hypothesis)));
-        return (correct * 10000) / validExamples.length;
+        return correct;
     }
-    
+
     /*
      * just so i can test out the test function
      */
@@ -179,7 +194,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
     }
     
     private void displayRunInfo(String completeRun_b) {
-        System.out.println("fitness - " + getFitness(completeRun_b));
+        System.out.println("fitness - " + ((double) (getFitness(completeRun_b) / 100)) + "%");
         System.out.println(hypothesisToGrepString(completeRun_b));
         System.out.println(hypothesisToReadableString(completeRun_b));
         System.out.println("*******************************************************************");
