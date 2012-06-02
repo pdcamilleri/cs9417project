@@ -98,43 +98,16 @@ public class MushoomFitnessFunction implements FitnessFunction {
     }
 
     public int getFitness(String hypothesis) {
-        char[][] validExamples = examples; // just setting it so eclipse wont complain
-        char[][] invalidExamples = examples; // just setting it so eclipse wont complain
-        
-        char lastChar = hypothesis.charAt(hypothesis.length() - 1);
-        String alternateHypothesis = hypothesis.substring(0, hypothesis.length() - 1);
-        if (lastChar == '1') {
-            validExamples = poisonousExamples;
-            invalidExamples = edibleExamples;
-            alternateHypothesis += '0';
-        } else if (lastChar == '0') {
-            validExamples = edibleExamples;
-            invalidExamples = poisonousExamples;
-            alternateHypothesis += '1';
-        } else {
-            ((String) null).length(); // crash program, shouldnt get here
-        }
         
         // count up the number of true positives
-        int correct = testHypothesisAgainstExamples(hypothesis, validExamples);
+        int correct = testHypothesisAgainstExamples(hypothesis, examples);
         
-        // also need to count up number of false positives
-        int incorrect = invalidExamples.length - testHypothesisAgainstExamples(alternateHypothesis, invalidExamples);
-//        System.out.println(invalidExamples.length + " - " + testHypothesisAgainstExamples(alternateHypothesis, invalidExamples) + 
-//                " = " + incorrect);
-        
-//        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
-//        System.out.println(correct + " - " + incorrect);
-//        System.out.println(alternateHypothesis);
-//        System.out.println(hypothesisToGrepString(alternateHypothesis));
-        correct += incorrect;
         if (correct > 1) {
             System.out.print(((double) (((correct) * 100) / examples.length)) + "%");
             System.out.print(" (" + correct + "/" + examples.length + ") -->> " + (hypothesisToGrepString(hypothesis)));
             System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
         }
-//        normalise so that e == p?
-//        System.out.println("returning for above hypo " + (((correct + incorrect) * 10000) / examples.length));
+        
         return ((correct) * 10000) / examples.length;
     }
     
@@ -152,6 +125,8 @@ public class MushoomFitnessFunction implements FitnessFunction {
      * just so i can test out the test function
      */
     public static void main(String[] args) throws IOException {
+        
+        testTest();
         
 //        Parser parser = new MushroomParser();
 //        char[][] examples = parser.parse("src/datasets/mushroom.cleaned");
@@ -171,12 +146,12 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //        }
 //        System.out.println(count + " - " + countz);
 
-        String specificStringa =
-"00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-        String specificStringb =
-"00000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-        String specificStringc =
-"00000000000000000000000110101110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+//        String specificStringa =
+//"00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+//        String specificStringb =
+//"00000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+//        String specificStringc =
+//"00000000000000000000000110101110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
         
         // first complete run of GA
 //        String[] runs = {
@@ -190,10 +165,10 @@ public class MushoomFitnessFunction implements FitnessFunction {
         
         String[] badRuns = {
                 "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001",
-                "00000010000000000000010000000000010100010000000000000000010000000000000000010000000010000000000000000010000100000000000000100001",
-                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000000",
-                "00000000000000000000000001010100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010",
-                "00000000000000000000000010101111111100000000000000000000000000000000000000000000000000000001000000000000000000000000000000000001",
+//                "00000010000000000000010000000000010100010000000000000000010000000000000000010000000010000000000000000010000100000000000000100001",
+//                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000000",
+//                "00000000000000000000000001010100000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000010",
+//                "00000000000000000000000010101111111100000000000000000000000000000000000000000000000000000001000000000000000000000000000000000001",
         };
         for (int i = 0; i < badRuns.length; i++) {
             mff.displayRunInfo(badRuns[i]);
@@ -213,6 +188,88 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //        System.out.println("fitnessc - " + mff.getFitness(specificStringc));
     }
     
+    /**
+     * method to test the fitness function
+     */
+    private static void testTest() {
+        
+        
+        // have to find training examples in the actual dataset
+        MushoomFitnessFunction mff = new MushoomFitnessFunction();
+        
+        {
+            /* 
+             * idea behind this test
+             * 2 attributes, 2 values per attribute, 2 classes.
+             * A = { a1, a2 }
+             * B = { b1, b2 }
+             * C = { c1, c2 }
+             * 
+             * BitString representation as follows
+             * 
+             * AABBC - where C = 0 for c1, 1 for c2
+             * 
+             * makes for 4 different training examples, which are as follows
+             * 1) a1 & b1 => c1
+             * 2) a1 & b2 => c2
+             * 3) a2 & b2 => c1
+             * 4) a2 & b2 => c2
+             * 
+             * so if we had a hypothesis which was
+             * 10000
+             * that is, if a1 then c1, else c2. we should get
+             * 1) a1 & b1 => c1 - correct
+             * 2) a1 & b2 => c2 - wrong
+             * 3) a2 & b2 => c1 - wrong
+             * 4) a2 & b2 => c2 - correct
+             * 
+             * it is those last two in particular that I need to account for
+             */
+            String[] testExamples = {
+                    //k = a1, f = a2
+                    //d = b1, l = b2
+                    //e = c1, p = c2
+                    "ksefyfcnbt?kkwppwoewvde",
+                    "ksefyfcnbt?kkwppwoewvlp",
+                    "fsefyfcnbt?kkwppwoewvde",
+                    "fsefyfcnbt?kkwppwoewvlp",
+            };
+            // if a1 and anything, then c1
+            String hypothesis = 
+"00010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            System.out.println(hypothesis);
+            System.out.println(mff.hypothesisToGrepString(hypothesis));
+            assert(mff.test(hypothesis, testExamples[0].toCharArray()) == true);
+            assert(mff.test(hypothesis, testExamples[1].toCharArray()) == false);
+            assert(mff.test(hypothesis, testExamples[2].toCharArray()) == false);
+            assert(mff.test(hypothesis, testExamples[3].toCharArray()) == true);
+        }
+        
+        {
+            /*
+             * for the veil-type attribute, every test case has the value 'p'.
+             * but for some reason, when a hypothesis returns 
+             *          if veil-type = p then p
+             * it comes back with perfect accurary, which should not be the case
+             * because if p => p, then it should be predicting p for all of the e classes
+             * and so should only be ~50% correct.
+             */
+            String[] testExamples = {
+                    "ksefyfcnbt?kkwwpwoewvlp",
+                    "ksefyfcnbt?kkwwpwoewvde",
+            };
+            // if a1 and anything, then c1
+            String hypothesis = 
+"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001";
+            System.out.println(hypothesis);
+            System.out.println(mff.hypothesisToGrepString(hypothesis));
+            assert(mff.test(hypothesis, testExamples[0].toCharArray()) == true);
+            assert(mff.test(hypothesis, testExamples[1].toCharArray()) == false);
+        }
+        
+        
+    }
+
     private void displayRunInfo(String completeRun_b) {
         System.out.println("fitness - " + ((double) (getFitness(completeRun_b) / 100)) + "%");
         System.out.println(hypothesisToGrepString(completeRun_b));
@@ -231,31 +288,64 @@ public class MushoomFitnessFunction implements FitnessFunction {
             mask[i] = '0';
         }
         
-        // create a bitstring from the training example
+        boolean attributesMatch = true;;
         int position = 0;
-        for (int i = 0; i < example.length; i++) { // example length will always be the same....can optimize this
+        // for each attribute in the training example
+        for (int i = 0; i < example.length - 1; i++) {
+            // grab out the value for that attribute
             char value = example[i];
+            
+            // and find its index in attribute array
             int j;
-            for (j = 0; j < attributes[i].length - 1; j++) { // the last attribute, p/e is a special case, hence the -1
-                if (attributes[i][j] == value) break;
+            for (j = 0; j < attributes[i].length; j++) { // note the last attribute, p/e is a special case, hence the length-1
+                if (attributes[i][j] == value) {
+                    break;
+                    // once we have found the value (and hence the index) break out
+                }
             }
+            // we now have the index (j) of the particular value in the training example, i.e. position + j
+            // (where position is the position of the end of the last set of attributes in the bitString)
+            // if the hypothesis has a 1 at this position, all good (1st condition)
+            // if the hypothesis as a 0 at this position, then we have to check the other values in the bitString
+            // for the same attributes. if they are all 0, it means this attribute is not relevant to this hypothesis
+            // so all good. if we find a 1 however, hypothesis doesn't match.
             if (hypothesis.charAt(position + j) != '1' && existsAnotherOne(hypothesis, position, j, i)) {
-                return false;
+                // hypothesis doesn't match, as explained in comment above this one
+                attributesMatch = false;
             }
-            position += attributes[i].length; // update our position to skip over this attribute
+            position += attributes[i].length; // update our position to skip over this attribute on the next iteration
         }
-        // check the last bit which is special
+        
+        // check the last bit which is special (2 values, only 1 bit)
         char lastValue = example[example.length - 1];
-        position--; // undo the last add
+        
+        // now, if hypothesisFits at this point, just need to check the last bit agrees
+        // but if the hypothesis doesn't fit at this point, we can still return true,
+        // provided the class of the hypothesis and training example disagree too
         if (lastValue == 'p') {
             lastValue = '1';
         } else {
             lastValue = '0';
         }
-        if (hypothesis.charAt(position) != lastValue) {
-            return false;
+        
+        // class off training example and hypothesis disagree
+        if (hypothesis.charAt(hypothesis.length() - 1) != lastValue) {
+            /* now if we are in here, only 2 things could have happened
+             * 1) the attributes of the hypothesis agrees with the training example, but the classes are in disagreement.
+             *    since the attributes are in agreement, attributesMatch = true at this point. But we want to return false,
+             *    since the classes are wrong. so
+             *    attributesMatch (true) == false ==>> is false, which is what we want to return
+             *    
+             * 2) the attributes of the hypothesis disagree with the training examples AND the classes are in disagreement.
+             *    the attributes disagree, so attributesMatch = false, but we want to return true, because the attributes
+             *    are not covered by the hypothesis, and if that is the case, then the opposite class is predicted. so
+             *    in this case, our hypothesis is correct since it doesnt match with the attributes or the class of the 
+             *    training example, so
+             *    attributesMatch (false) == false ==>> is true, which is what we want to return
+             */
+            return attributesMatch == false;
         }
-        return true;
+        return attributesMatch;
     }
 
     /**
