@@ -119,6 +119,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
             }
         }
 //        System.out.println((correct) + " / " + tested + " - " + wrong + " - " + hypothesis);
+        if (correct > 1) System.out.println((correct * 10000) / validExamples.length + " - " + (hypothesisToGrepString(hypothesis)));
         return (correct * 10000) / validExamples.length;
     }
     
@@ -146,21 +147,44 @@ public class MushoomFitnessFunction implements FitnessFunction {
 //        System.out.println(count + " - " + countz);
 
         String specificStringa =
-"11111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+"00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
         String specificStringb =
-"11111110000000000000001111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+"00000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
         String specificStringc =
 "00000000000000000000000110101110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-
         
-        System.out.println(mff.hypothesisToReadableString(specificStringa));
-        System.out.println(mff.hypothesisToGrepString(specificStringa));
-        System.out.println(mff.hypothesisToGrepString(specificStringb));
-        System.out.println(mff.hypothesisToGrepString(specificStringc));
-        System.out.println("c" + mff.hypothesisToReadableString(specificStringc));
-        System.out.println("fitness" + mff.getFitness(specificStringc));
+        // first complete run of GA
+        String[] runs = {
+                "00000000000000000000001011011110000000000000000000000011110010000000000000000000000000000000000000000000000000000000000000000000",
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000000000000000000000000000000001",
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000001",
+        };
+        
+        for (int i = 0; i < runs.length; i++) {
+            mff.displayRunInfo(runs[i]);
+        }
+        
+//        { 'a', 'c', 'f', 'l', 'm', 'n', 'p', 's', 'y'}, "aflnpsy" ==>> if odor = {c or m} and stalk-root = { u or z } => edible
+//        { 'b', 'c', 'e', 'r', 'u', 'z', '?'}, "bcer?" ==>> 
+        
+//        System.out.println(mff.hypothesisToReadableString(specificStringa));
+//        System.out.println(mff.hypothesisToGrepString(specificStringa));
+//        System.out.println("fitnessa - " + mff.getFitness(specificStringa));
+//        System.out.println(mff.hypothesisToGrepString(specificStringb));
+//        System.out.println(mff.hypothesisToReadableString(specificStringb));
+//        System.out.println("fitnessb - " + mff.getFitness(specificStringb));
+//        System.out.println(mff.hypothesisToGrepString(specificStringc));
+//        System.out.println("c" + mff.hypothesisToReadableString(specificStringc));
+//        System.out.println("fitnessc - " + mff.getFitness(specificStringc));
     }
     
+    private void displayRunInfo(String completeRun_b) {
+        System.out.println("fitness - " + getFitness(completeRun_b));
+        System.out.println(hypothesisToGrepString(completeRun_b));
+        System.out.println(hypothesisToReadableString(completeRun_b));
+        System.out.println("*******************************************************************");
+    }
+
     /**
      * tests whether or not a particular hypothesis is consistent with a particular training example
      * @param hypothesis

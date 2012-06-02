@@ -1,8 +1,10 @@
 package geneticalgo;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * Genetic Algorithm implementation
@@ -52,9 +54,9 @@ public class GeneticAlgorithm {
 
         // while [max,,h,, fitness(h)] < fitness_threshold
         while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
-            System.out.print(problemSpecification.getFitnessFunction().
-                    hypothesisToGrepString(SetUtilClass.maxHypothesis(hypothesises)) 
-                            + " - " + SetUtilClass.maxFitness(hypothesises));
+//            System.out.println(problemSpecification.getFitnessFunction().
+//                    hypothesisToGrepString(SetUtilClass.maxHypothesis(hypothesises)) 
+//                            + " - " + SetUtilClass.maxFitness(hypothesises));
             numberOfGenerations++;
 //            System.out.println("The next generation - " + numberOfGenerations);
 
@@ -64,7 +66,8 @@ public class GeneticAlgorithm {
             // TODO: idea, set the mean here, move selectNewGeneration to under mutate method, so that only good hypothesises are in the next generation.
             // so always moving forward. will need to do some testing of this later to see if the idea is sound.
             int mean = getMean(hypothesises);
-            System.out.println("mean - " + mean);
+            System.out.println("mean - " + mean + " --- " + "size - " + hypothesises.size());
+            
             // select: probabilistically select (1-r)p members of P to add to Ps
             // Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness
             // h,,j,,)
@@ -72,12 +75,19 @@ public class GeneticAlgorithm {
             // the fitness of h,,i,, divided by the sum of all fitnesses of all
             // hypothesis???
             // TODO: need to check the above formula, what does it mean?
-            selectNewGeneration(hypothesises, nextHypothesises, mean); // weed out the weak, keep the strong
+//            selectNewGeneration(hypothesises, nextHypothesises, mean); // weed out the weak, keep the strong
+            
+            // other implementation breaks with many bad hypos
+            selectNewGenerationImproved(hypothesises, nextHypothesises, mean);
 
             // singlePointCrossover: probabilistically select r-p/2 pairs of hypos from P.
             // produce two offspring for each pair using singlePointCrossover operator, add
             // to Ps
+            
+            System.out.println("crossoveersize - " + nextHypothesises.size());
             singlePointCrossover(hypothesises, nextHypothesises, p, r);
+            System.out.println("crossoveersize - " + hypothesises.size());
+            System.out.println("crossoveersize - " + nextHypothesises.size());
             
 //            uniformCrossover(hypothesises, nextHypothesises, p, r);
 
@@ -85,10 +95,13 @@ public class GeneticAlgorithm {
 
             // mutate: invert a randomly selected bit in m * p random hypos from
             // set Ps
+            System.out.println("mutatesize - " + nextHypothesises.size());
             mutate(nextHypothesises, m, p);
+            System.out.println("mutatesize - " + nextHypothesises.size());
 
             // update: P <- Ps
             hypothesises = nextHypothesises;
+            System.out.println("p<ps size - " + hypothesises.size());
 
             // evaluate for each h in P, compute fitness(h)
             // TODO: functionize this more since we use it twice
@@ -119,7 +132,7 @@ public class GeneticAlgorithm {
      */
     private void mutate(Map<String, Integer> nextHypothesises, int m, int p) {
         // int numberOfHypothesisesToMutate = m * p;
-        int numberOfHypothesisesToMutate = 1 + nextHypothesises.keySet().size() / 4;
+        int numberOfHypothesisesToMutate = 1; // + nextHypothesises.keySet().size() / 10;
         // TODO: just mutate quarter, naive implementation, until meaning of m is
         // revealed.
         // m == mutation rate? a small value like 0.1?
@@ -171,6 +184,42 @@ public class GeneticAlgorithm {
             }
         }
     }
+    
+    private void selectNewGenerationImproved(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int mean) {
+        
+        ValueComparator bvc =  new ValueComparator(hypothesises);
+        TreeMap<String, Integer> sorted_map = new TreeMap(bvc);
+        
+        sorted_map.putAll(hypothesises);
+
+        int size = sorted_map.size() / 2;
+        for (String key : sorted_map.keySet()) {
+//            System.out.println("key/value: " + key + "/"+sorted_map.get(key));
+            nextHypothesises.put(key, sorted_map.get(key));
+            if (--size == 0) return;
+        }
+    
+    }
+    // taken from stackoverflow
+    class ValueComparator implements Comparator {
+
+        Map base;
+
+        public ValueComparator(Map base) {
+            this.base = base;
+        }
+
+        public int compare(Object a, Object b) {
+
+            if ((Integer) base.get(a) < (Integer) base.get(b)) {
+                return 1;
+            } else if ((Integer) base.get(a) == (Integer) base.get(b)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+    }
 
     private int getMean(Map<String, Integer> hypothesises) {
         int mean = 0;
@@ -191,7 +240,7 @@ public class GeneticAlgorithm {
             Random r = new Random();
             String s = "";
             for (int j = 0; j < lengthOfBitStrings; j++) { // TODO what is the length of each hypo? needs to be a variable
-                if (r.nextInt(10) != 0) {
+                if (r.nextInt(15) == 0) {
                     s += "1";
                 } else {
                     s += "0";
@@ -203,7 +252,7 @@ public class GeneticAlgorithm {
     }
 
     /**
-     * singlePointCrossover: probabilistically select r-p/2 pairs of hypos from P.
+     * singlePointCrossover: probabilistically select r*p/2 pairs of hypos from P.
      * produce two offspring for each pair using singlePointCrossover operator, add
      * to Ps
      * @param hypothesises
@@ -212,7 +261,7 @@ public class GeneticAlgorithm {
      * @param p 
      */
     private void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -242,7 +291,7 @@ public class GeneticAlgorithm {
      * @param r
      */
     private void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -270,7 +319,7 @@ public class GeneticAlgorithm {
     }
 
     private void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r-p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
