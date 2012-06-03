@@ -1,0 +1,40 @@
+Giving a very strict set of guidelines to the format of the report for assignment 2 is difficult since the different projects are very varied. However, to give you some general points to follow regarding the type of information the report should contain, you can get an outline of a sample project report for a fictional topic for assignment 2 here. Note that in your case the emphasis may be different, for example: 
+
+Length	 Keep it quite short, about 2 pages per person in the group. Include a README file with the code so you don't have to put that type of information in the report.
+
+Introduction	 You must explain the problem you have tackled, the basic approach taken to solving it, and any important aspects of that approach in terms of machine learning.
+
+basic problem was using genetic algorithms to solve classification problems. this came in two forms. the first with a completely determinable dataset involving weights which would either be balanced or left/right heavy. the second was a slightly more random dataset involving mushrooms and their edibility/poisonousness. the basic approach of genetic algorithms is to represent a solution/function that predicts a class as a bitString, that is a string of 0's and 1's. we then use genetic operations on these long bitStrings similar to what would occur in nature. first the "best" hypotheses are selected, whereby "best" is determined by a fitness function which evaluates a given hypothesis and returns a value representing its fitness. next most fit hypotheses will breed, by taking two hypotheses and combining them. lastly, some hypotheses are mutated. this process then repeats, the idea being that slowly, the best hypotheses will survive and breed and you will slowly converge to a set of hypotheses that are quite accurate.
+
+important aspects of that approach in terms of machine learning???
+
+applying a machine learning algorithm has a number of key steps, how something will be learned, how will you give it training examples, what algorithm, how to represent hypotheses, etc.
+The success of a genetic algorithm falls entirely on two things: the representation that is chosen and the fitness function. there are of course other things that can be modified, for example sometimes the genetic operators are modified because of the problem, or genetic operators are added (example used in mitchell textbook) but hypothesis representation and fitness function are the two biggest aspects to consider when using a genetic algorithm.
+
+Implementation	 If your work was mostly implementation, focus on that. Otherwise briefly describe what you did. 
+
+started with naive implementations of genetic operators. initially just wanted to get the algo to work with bitstrings whereby the number of 1's in the bitstring was the fitness function.
+after that, started to work with the datasets and writing parsers, implementing fitness function to go with the representation, and such.
+
+representation used for mushroom was one bit per value per attribute plus an extra bit to represent the class. this resulted in a 127 bit long string. if a particular bit was set, it meant that value for that attribute was in the hypothesis. if two values for the same attribute were set, it means that this hypothesis would apply if the training example contained either of these two values. and if values for multiple attributes were set, it meant that the training example had to satisfy at least one of the values for each attribute. (need to explain this better). the last bit was 1 if the class predicted was poisonous, 0 for edible.
+
+once we were able to get the basic algorithm running some problems became noticable.
+for example, the most general hypothesis would return a perfect fitness level, which is useless. there were similar issues related to the fitness function which underwent many iterations of development to get correct. at one stage it would assume all examples that didnt fall under the current hypothesis were correctly classified. this is incorrect and tests were written to overcome this problem. after that, we noticed that the number of hypotheses in each class were not equal, so certain hypotheses would be selected based on the nature of the training examples, and not on the correctness of the hypothesis itself. to account for this, the datasets for mushroom were split into two, those with a poisonous classification, and those with an edible classification. each hypothesis was run against both and the % correct was calculated separately. these %'s were then combined to produce the fitness return value.
+
+also had an issue with crowding...currently being solved
+
+Experimentation	All methods must be tested on some data, so these results should be included. Additionally, if this was a major focus, you will need to explain the work done and what was accomplished, for example on setting up the learning task, choice of evaluation, and so on. Detailed statistical analyses are probably outwith the scope of the project, so don't include these unless you are already very familiar with this kind of thing.
+
+after running algo several times, these rules were produced, took this many iterations
+
+also tested using two point crossover and uniform crossover, produced these results...
+
+References	Should be there for algorithms used or other aspects of the work.
+
+mitchell book
+weka book
+red book
+
+Appendix	Should be used if you have a lot of experimental results. However, consider plotting graphs or using other visualizations like histograms to summarize a lot of results concisely.
+
+graphs and stuff

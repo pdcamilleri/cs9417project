@@ -40,7 +40,7 @@ public class GeneticAlgorithm {
 
         // initialise: P <- p random hypothesis
         // hypothesis: maps bitStrings to fitness
-        Map<String, Integer> hypothesises = getRandomBitStrings(p, 128);
+        Map<String, Integer> hypothesises = getRandomBitStrings(p, 127);
 
         // evaluate: for each h in P, compute fitness(h)
         for (String h : hypothesises.keySet()) {
@@ -126,7 +126,7 @@ public class GeneticAlgorithm {
      */
     private void mutate(Map<String, Integer> nextHypothesises, int m, int p) {
         // int numberOfHypothesisesToMutate = m * p;
-        int numberOfHypothesisesToMutate = 1; // + nextHypothesises.keySet().size() / 10;
+        int numberOfHypothesisesToMutate = nextHypothesises.keySet().size() / 10;
         // TODO: just mutate quarter, naive implementation, until meaning of m is
         // revealed.
         // m == mutation rate? a small value like 0.1?
