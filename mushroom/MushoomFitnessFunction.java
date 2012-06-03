@@ -99,16 +99,33 @@ public class MushoomFitnessFunction implements FitnessFunction {
 
     public int getFitness(String hypothesis) {
         
-        // count up the number of true positives
-        int correct = testHypothesisAgainstExamples(hypothesis, examples);
+        int factor = 100;
         
-        if (correct > 1) {
-            System.out.print(((double) (((correct) * 100) / examples.length)) + "%");
-            System.out.print(" (" + correct + "/" + examples.length + ") -->> " + (hypothesisToGrepString(hypothesis)));
-            System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
-        }
+        // count up the number of examples correctly classified
+        // do poisonous and edible examples separately so they contribute equally to the fitness
+        // that is. since there are more edible examples, anything that predicts poisonous has an advantage
+        // since it will usually classify all edible examples correctly. and since there are more, it will
+        // be preferred over a similar hypothesis that predicts all p examples correctly, but doesnt do so 
+        // well on e examples.
+        int poisonousCorrect = testHypothesisAgainstExamples(hypothesis, poisonousExamples);
+        int edibleCorrect    = testHypothesisAgainstExamples(hypothesis, edibleExamples);
         
-        return ((correct) * 10000) / examples.length;
+        int returnValue = (poisonousCorrect * 100 * factor / poisonousExamples.length) + 
+                             (edibleCorrect * 100 * factor / edibleExamples.length);
+        returnValue /= 2;
+        
+        
+        
+        
+//        if (poisonousCorrect > 1) {
+        System.out.print(((double) (((returnValue) / factor))) + "%");
+        System.out.print(" (" + (edibleCorrect + poisonousCorrect) + "/" + examples.length + ") -->> " +
+                                                (hypothesisToGrepString(hypothesis)));
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
+//        }
+        
+//        return ((correct) * 10000) / examples.length;
+        return returnValue;
     }
     
     private int testHypothesisAgainstExamples(String hypothesis, char[][] validExamples) {
@@ -160,6 +177,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
                 "0000000000000000000000001010111111110000000000000000000000000000000000000000000000000000000100000000000000000000000000000000001",
                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100100000000001000001000000000000001",
                 "0000000000000000000000000101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "0000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
         };
         
         for (int i = 0; i < runs.length; i++) {

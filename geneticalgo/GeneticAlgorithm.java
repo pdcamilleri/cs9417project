@@ -234,7 +234,7 @@ public class GeneticAlgorithm {
             Random r = new Random();
             String s = "";
             for (int j = 0; j < lengthOfBitStrings; j++) { // TODO what is the length of each hypo? needs to be a variable
-                if (r.nextInt(15) == 0) {
+                if (r.nextInt(25) == 0) {
                     s += "1";
                 } else {
                     s += "0";
