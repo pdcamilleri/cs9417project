@@ -182,7 +182,7 @@ public class GeneticAlgorithm {
     private void selectNewGenerationImproved(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int mean) {
         
         ValueComparator bvc =  new ValueComparator(hypothesises);
-        TreeMap<String, Integer> sorted_map = new TreeMap(bvc);
+        TreeMap<String, Integer> sorted_map = new TreeMap<String, Integer>(bvc);
         
         sorted_map.putAll(hypothesises);
 
@@ -195,11 +195,11 @@ public class GeneticAlgorithm {
     
     }
     // taken from stackoverflow
-    class ValueComparator implements Comparator {
+    class ValueComparator implements Comparator<Object> {
 
-        Map base;
+        Map<String, Integer> base;
 
-        public ValueComparator(Map base) {
+        public ValueComparator(Map<String, Integer> base) {
             this.base = base;
         }
 
