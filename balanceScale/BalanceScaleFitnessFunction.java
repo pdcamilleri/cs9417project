@@ -34,75 +34,63 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 	}
 
 	public static void main(String[] args) throws IOException {
-		char[] tarparl = {'1','2','3','4','R'};
-		String hypartharsarse = "1000001000001000001000111111111111111111111001";
+		char[][] tarparls = {{'1','5','1','1','L'},{'2','5','1','1','L'},{'3','2','1','1','L'},
+							 {'1','4','1','4','B'},{'1','2','3','4','R'}};
+		String hypartharsarse = "11111111111111110000001";
 		BalanceScaleFitnessFunction bsff = new BalanceScaleFitnessFunction();
-		
-		if (bsff.balanceScaleJudge(tarparl, hypartharsarse)) {
-			System.out.println("judged guilty");
+		for (int i = 0; i < 5; i++) {
+			if (bsff.balanceScaleJudge(tarparls[i], hypartharsarse)) {
+				System.out.println("right");
+			} else {
+				System.out.println("wrong");
+			}
 		}
 	}
 	
 	private boolean balanceScaleJudge(char[] tuple, String hypothesis) {
-
-		boolean judgement = false;
-	
-		// [1, 2, 1, 1, L]
-	
-		// example hypothesis:
-		// 11111100101110111011100 01011111110000000100001
-		// LD = 1/4 AND RW = 1/2/3/5 AND RD = 1/2/4/5 THEN class = L +
-		// LW = 2/4/5 AND RW = noValueAllowed THEN class = R
-		// example tuple:
-		// 1,2,1,1,L
-
-		// for each rule, see if ALL values in tuple are covered under the hypothesis by ALL rules
 		
+		boolean judgement = true;
+		
+		int wrongRules = 0;
 		// need to look at each rule in hypothesis
-		int ruleCount = 0;
 		for (int i = 0; i < hypothesis.length()/23; i++ ) { 
-			// look at each attribute in the tuple
+			// look at each attribute in the rule
 			int matchCount = 0;
-			for (int j = 0; j < 5; j++) { // 4 = NUM_ATTRIBUTES + 1 for class
-				
+			boolean classMatch = false;
+			String attr = hypothesis.substring(23*i+20, 23*i+20+3); // the class of each rule: 100|010|001
+			if (tuple[4] == 'L') {
+				if (attr.equals("100")) {
+					classMatch = true;
+				}
+			} else if (tuple[4] == 'B') {
+				if (attr.equals("010")) {
+					classMatch = true;
+				}
+			} else if (tuple[4] == 'R') {
+				if (attr.equals("001")) {
+					classMatch = true;
+				}
+			}
+			for (int j = 0; j < 4; j++) { // 4 = NUM_ATTRIBUTES
 				// look at the values for each attribute in the rule
 				int index = 23*i+5*j;
-				if (j == 4) {
-					// check class
-					String attr = hypothesis.substring(index, index+3); // 100|010|001
-					if (tuple[j] == 'L') {
-						if (attr.equals("100")) {
-							matchCount++;
-						}
-					} else if (tuple[j] == 'B') {
-						if (attr.equals("010")) {
-							matchCount++;
-						}
-					} else if (tuple[j] == 'R') {
-						if (attr.equals("001")) {
-							matchCount++;
-						}
-					}
-					break;
-				}
-				String attr = hypothesis.substring(index, index+5); // aka for i = 1 (second rule) and j = 0 
-																	// (first attribute), get 01011
+				attr = hypothesis.substring(index, index+5); // aka for i = 1 (second rule) and j = 0 
+															 // (first attribute), get 01011 = (a1 = 2/4/5)
 				int posInAttr = (int)tuple[j] - '0' - 1;
 				if (attr.charAt(posInAttr) == '1') {
 					matchCount++;
 				}
 			}
-			if (matchCount == 5) {
-				// then this rule passes
-				ruleCount++;
-			}
+			if (matchCount == 4) { // if the rule matches for all the attributes
+				if (!classMatch) { // but the classification is wrong
+					wrongRules++;  // then its an incorrect rule.
+				} 
+			} 
 		}
-		if (hypothesis.length()/23 == ruleCount) {
-			// then all rules matched.
-			judgement = true;
+		// if there are ANY incorrect rules in the hypothesis, then the entire hypothesis is wrong
+		if (wrongRules > 0) {
+			judgement = false;
 		}
-			
 		return judgement;
 	}
-
 }

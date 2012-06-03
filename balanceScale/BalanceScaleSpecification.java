@@ -10,7 +10,7 @@ import geneticalgo.ProblemSpecification;
 
 public class BalanceScaleSpecification implements ProblemSpecification{
 
-	private static final int ARBITRARY_MAX_RULE_LENGTH = 6;
+	private static final int NUM_RULES = 6;
 	private static final int NUM_ATTRIBUTES = 4;
 	private static final int VALS_PER_ATTRIBUTE = 5;
 	
@@ -18,7 +18,7 @@ public class BalanceScaleSpecification implements ProblemSpecification{
 		return new BalanceScaleFitnessFunction();
 	}
 	
-	public Map<String, Integer> generateHypothesis(int p) {
+	public Map<String, Integer> generateHypotheses(int p) {
 		
 		Map<String, Integer> hypos = new HashMap<String, Integer>();
 		
@@ -33,7 +33,7 @@ public class BalanceScaleSpecification implements ProblemSpecification{
 			//make a string
 			String s = new String();
 			Random r = new Random();
-			int numRulesInHypo = r.nextInt(NUM_ATTRIBUTES)+1;
+			int numRulesInHypo = r.nextInt(NUM_RULES)+1;
 			for (int k = 0; k < numRulesInHypo; k++) {
 				//filled with random booleans to make rule
 				for (int j = 0; j < NUM_ATTRIBUTES*VALS_PER_ATTRIBUTE; j++) {
@@ -56,7 +56,7 @@ public class BalanceScaleSpecification implements ProblemSpecification{
 
 	public static void main(String[] args) throws IOException {
 		BalanceScaleSpecification bss = new BalanceScaleSpecification();
-		Map<String, Integer> hypos = bss.generateHypothesis(20); // <- num to display
+		Map<String, Integer> hypos = bss.generateHypotheses(20); // <- num to display
 		for (String s : hypos.keySet()) { 
 			System.out.print(s + " length = " + s.length());
 			/*for (int i = 0; i < s.length(); i+=4) {
