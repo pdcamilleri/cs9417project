@@ -58,7 +58,7 @@ public class BalanceScaleSpecification implements ProblemSpecification{
 		BalanceScaleSpecification bss = new BalanceScaleSpecification();
 		Map<String, Integer> hypos = bss.generateHypotheses(20); // <- num to display
 		for (String s : hypos.keySet()) { 
-			System.out.print(s + " length = " + s.length());
+			System.out.print(s);
 			/*for (int i = 0; i < s.length(); i+=4) {
 				System.out.print(bss.conversion.get(s.substring(i, i+4)));
 			}*/
