@@ -25,7 +25,7 @@ public class MushroomSpecification implements ProblemSpecification {
             map.put(s, null);
         }
         return map;
-	}
+    }
 
 
 }
