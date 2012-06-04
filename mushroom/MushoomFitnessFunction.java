@@ -99,8 +99,6 @@ public class MushoomFitnessFunction implements FitnessFunction {
 
     public int getFitness(String hypothesis) {
         
-        int factor = 100;
-        
         // count up the number of examples correctly classified
         // do poisonous and edible examples separately so they contribute equally to the fitness
         // that is. since there are more edible examples, anything that predicts poisonous has an advantage
@@ -110,15 +108,16 @@ public class MushoomFitnessFunction implements FitnessFunction {
         int poisonousCorrect = testHypothesisAgainstExamples(hypothesis, poisonousExamples);
         int edibleCorrect    = testHypothesisAgainstExamples(hypothesis, edibleExamples);
         
-        int returnValue = (poisonousCorrect * 100 * factor / poisonousExamples.length) + 
-                             (edibleCorrect * 100 * factor / edibleExamples.length);
+        int returnValue = (poisonousCorrect * 100 / poisonousExamples.length) + 
+                             (edibleCorrect * 100 / edibleExamples.length);
         returnValue /= 2;
         
         
         
         
 //        if (poisonousCorrect > 1) {
-        System.out.print(((double) (((returnValue) / factor))) + "%");
+        System.out.printf("%.2f%%", (poisonousCorrect * 50 / (double) poisonousExamples.length) + 
+                (edibleCorrect * 50 / (double) edibleExamples.length) );
         System.out.print(" (" + (edibleCorrect + poisonousCorrect) + "/" + examples.length + ") -->> " +
                                                 (hypothesisToGrepString(hypothesis)));
         System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
@@ -182,12 +181,12 @@ public class MushoomFitnessFunction implements FitnessFunction {
                 // ones below here are meant to be really good according to arff file
                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000001",
                 "0000000000000000000000011010111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+                "0000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000",
         };
         
         for (int i = 0; i < runs.length; i++) {
             mff.displayRunInfo(runs[i]);
         }
-        System.out.println(runs[4]);
 
         
         String[] badRuns = {

@@ -38,7 +38,7 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 
 		double scr = (double) score;
 		double dataSetSize = 625;
-		System.out.print((scr / dataSetSize * 100) + "%");
+		System.out.printf("%.2f%%", (scr / dataSetSize * 100));
 	    System.out.print(" -->> " + (hypothesisToGrepString(hypothesis)));
 	    System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
 		
