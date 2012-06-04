@@ -34,7 +34,7 @@ public class BalanceScaleSpecification implements ProblemSpecification{
 			String s = new String();
 			Random r = new Random();
 			int numRulesInHypo = r.nextInt(NUM_RULES)+1;
-			for (int k = 0; k < numRulesInHypo; k++) {
+			for (int k = 0; k < 1; k++) { // TODO: return this back to numRulesInHypo once multirule xo is figured out
 				//filled with random booleans to make rule
 				for (int j = 0; j < NUM_ATTRIBUTES*VALS_PER_ATTRIBUTE; j++) {
 					s += r.nextInt(2);
