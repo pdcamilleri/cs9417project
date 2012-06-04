@@ -18,6 +18,8 @@ public class GeneticAlgorithm {
     private double crossoverRate;
     private double mutationRate;
     
+    private final int MAX_RUNTIME = 10000;
+    
     public GeneticAlgorithm(ProblemSpecification problemSpecification) {
         this.problemSpecification = problemSpecification;
     }
@@ -46,7 +48,7 @@ public class GeneticAlgorithm {
         int numberOfGenerations = 0;
 
         // while [max,,h,, fitness(h)] < fitness_threshold
-        while (SetUtilClass.maxFitness(hypotheses) < fitnessThreshold) {
+        while (SetUtilClass.maxFitness(hypotheses) < fitnessThreshold && numberOfGenerations < MAX_RUNTIME) {
             numberOfGenerations++;
 
             // set containing the next generation of hypotheses
