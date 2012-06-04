@@ -12,6 +12,6 @@ public interface ProblemSpecification {
     
     FitnessFunction getFitnessFunction();
     
-    Map<String, Integer> generateHypotheses (int p, int lengthOfBitStrings);
+    Map<String, Integer> generateHypotheses (int p);
     
 }
