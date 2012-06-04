@@ -1,6 +1,7 @@
 package geneticalgo;
 
 import mushroom.MushroomSpecification;
+import balanceScale.BalanceScaleSpecification;
 
 public class Main {
 	
@@ -17,13 +18,15 @@ public class Main {
 		ProblemSpecification problemSpecification;
 		
 		if (true) { //put in some condition, like command line arguments?
-		    problemSpecification = new defaultSpecification();
+		    problemSpecification = new BalanceScaleSpecification();
+//			problemSpecification = new MushroomSpecification();
+//			problemSpecification = new ProblemSpecification();
 		}
 		
 		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
 		//                       fT  pop   xo   mut
 		//                       fT    p    r     m
-		geneticAlgorithm.execute(90, 100, 0.1, 0.01);
+		geneticAlgorithm.execute(600, 100, 0.1, 0.01);
 		
 		System.out.println("Closing program...");
 	}
