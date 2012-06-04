@@ -1,12 +1,8 @@
 package geneticalgo;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Takes an ARFF file (or similar) and parses stores the training examples,
@@ -25,7 +21,6 @@ public abstract class Parser {
      * @throws IOException 
      */
     public char[][] parse(String filename) throws IOException {
-        // File.separator may be useful
         
         // read the entire file into fileContents (this is taken from StackOverflow)
         String fileContents;
@@ -52,28 +47,6 @@ public abstract class Parser {
         }
         
         return trainingExamples;
-    }
-    
-    /**
-     * returns the number of lines in a given file.
-     * (code snippet taken from stack overflow)
-     */
-    private int numberOfLines(String filename) throws IOException {
-        InputStream is = new BufferedInputStream(new FileInputStream(filename));
-        try {
-            byte[] c = new byte[1024];
-            int count = 0;
-            int readChars = 0;
-            while ((readChars = is.read(c)) != -1) {
-                for (int i = 0; i < readChars; ++i) {
-                    if (c[i] == '\n')
-                        ++count;
-                }
-            }
-            return count;
-        } finally {
-            is.close();
-        }
     }
     
 }

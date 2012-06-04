@@ -7,13 +7,6 @@ public class Main {
 	
 	public static void main(String[] args) {
 
-		// 1) read input data from file into some data structure
-		
-		// 2) parse the input data into a usable format
-		// (perhaps combine with step 1 at later stage)
-		
-		// 3) Do Genetic Algo Magic
-		
 		ProblemSpecification problemSpecification = null;
 	
 		if (args.length == 0) {
@@ -30,7 +23,7 @@ public class Main {
 		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
 		//                       fT  pop   xo   mut
 		//                       fT    p    r     m
-		geneticAlgorithm.execute(600, 100, 0.1, 0.01);
+		geneticAlgorithm.execute(9000, 100, 0.2, 0.05);
 		
 		System.out.println("Closing program...");
 	}

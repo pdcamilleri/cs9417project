@@ -3,28 +3,10 @@ package mushroom;
 import geneticalgo.FitnessFunction;
 import geneticalgo.Parser;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 public class MushoomFitnessFunction implements FitnessFunction {
 
-    // this array holds the number of values for each attribute.
-    // so for mushroom, first attribute is cap-shape, which can take on 6 values. hence first value in the array is 6.
-    private int[] lengthsOfAttributes = {
-            6, 4, 10, 2, 9, 4, 3, 2, 12, 2, 6, 4, 4, 9, 9, 2, 4, 3, 8, 6, 7, 1
-    };
-
-    private char[][] trainingExamplesRigged = {
-            {'b','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'},
-            {'c','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'},
-            {'f','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'},
-            {'k','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'},
-            {'s','s','n','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','s','u','p'},
-            {'x','s','y','t','a','f','c','b','k','e','c','s','s','w','w','p','w','o','p','n','n','g','e'}
-    };
-    
-    // TODO maybe parse this from arff file??? 
     private char[][] attributes = {
         { 'b', 'c', 'f', 'k', 's', 'x'},
         { 'f', 'g', 's', 'y'},
@@ -36,7 +18,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
         { 'b', 'n'},
         { 'b', 'e', 'g', 'h', 'k', 'n', 'o', 'p', 'r', 'u', 'w', 'y'},
         { 'e', 't'},
-        { 'b', 'c', 'e', 'r', 'u', 'z', '?'}, // added one for ? TODO remove it?
+        { 'b', 'c', 'e', 'r', 'u', 'z', '?'},
         { 'f', 'k', 's', 'y'},
         { 'f', 'k', 's', 'y'},
         { 'b', 'c', 'e', 'g', 'n', 'o', 'p', 'w', 'y'},
@@ -50,19 +32,17 @@ public class MushoomFitnessFunction implements FitnessFunction {
         { 'd', 'g', 'l', 'm', 'p', 'u', 'w'},
         { 'e', 'p'},
     };
-    private char[][] examples;
+    
+    private char[][] allExamples;
     private char[][] poisonousExamples;
     private char[][] edibleExamples;
     
-    private final int LENGTH_OF_BITSTRING = 128; // 117, 127 without p/non-p, 128 inc ?
-    private final int NUMBER_OF_ATTRIBUTES = 22;
-
     public MushoomFitnessFunction() {
 
         Parser parser = new MushroomParser();
         try {
-            examples = parser.parse("src/datasets/mushroom.cleaned");
-            sortExamples(examples);
+            allExamples = parser.parse("src/datasets/mushroom.cleaned");
+            sortExamples(allExamples);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,17 +52,19 @@ public class MushoomFitnessFunction implements FitnessFunction {
      * sorts training examples into poisonous and edible sets.
      */
     private void sortExamples(char[][] examples) {
-        // find the number of instances in each set
-        // so we can create the array
+        // find the number of instances in each set (poisonous, edible)
+        // so we can create the poisonous/edible arrays
         int numberOfPoisonousExamples = 0;
         for (int i = 0; i < examples.length; i++) {
             if (examples[i][examples[i].length - 1] == 'p') {
                 numberOfPoisonousExamples++;
             }
         }
+        
         poisonousExamples = new char[numberOfPoisonousExamples][examples[0].length];
         edibleExamples = new char[examples.length - numberOfPoisonousExamples][examples[0].length];
         
+        // sort examples into their respective sets
         int poisonousPosition = 0;
         int ediblePosition = 0;
         for (int i = 0; i < examples.length; i++) {
@@ -97,14 +79,16 @@ public class MushoomFitnessFunction implements FitnessFunction {
         
     }
 
+    /**
+     * Count up the number of examples correctly classified by the given hypothesis.
+     * Calculate poisonous and edible examples separately so they contribute equally to the fitness.
+     * That is, since there are more edible examples, anything that predicts poisonous has an advantage
+     * since it will usually classify all edible examples correctly. and since there are more, it will
+     * be preferred over a similar hypothesis that predicts all p examples correctly, but doesn't do so 
+     * well on e examples.
+     */
     public int getFitness(String hypothesis) {
         
-        // count up the number of examples correctly classified
-        // do poisonous and edible examples separately so they contribute equally to the fitness
-        // that is. since there are more edible examples, anything that predicts poisonous has an advantage
-        // since it will usually classify all edible examples correctly. and since there are more, it will
-        // be preferred over a similar hypothesis that predicts all p examples correctly, but doesnt do so 
-        // well on e examples.
         int poisonousCorrect = testHypothesisAgainstExamples(hypothesis, poisonousExamples);
         int edibleCorrect    = testHypothesisAgainstExamples(hypothesis, edibleExamples);
         
@@ -112,18 +96,12 @@ public class MushoomFitnessFunction implements FitnessFunction {
                              (edibleCorrect * 100 / edibleExamples.length);
         returnValue /= 2;
         
-        
-        
-        
-//        if (poisonousCorrect > 1) {
         System.out.printf("%.2f%%", (poisonousCorrect * 50 / (double) poisonousExamples.length) + 
                 (edibleCorrect * 50 / (double) edibleExamples.length) );
-        System.out.print(" (" + (edibleCorrect + poisonousCorrect) + "/" + examples.length + ") -->> " +
+        System.out.print(" (" + (edibleCorrect + poisonousCorrect) + "/" + allExamples.length + ") -->> " +
                                                 (hypothesisToGrepString(hypothesis)));
         System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
-//        }
         
-//        return ((correct) * 10000) / examples.length;
         return returnValue;
     }
     
@@ -136,10 +114,100 @@ public class MushoomFitnessFunction implements FitnessFunction {
         }
         return correct;
     }
-
-    /*
-     * just so i can test out the test function
+    
+    /**
+     * tests whether or not a particular hypothesis is consistent with a particular training example
+     * @param hypothesis
      */
+    private boolean test(String hypothesis, char[] example) {
+        // create a blank hypothesis
+        char[] mask = new char[example.length];
+        for (int i = 0; i < mask.length; i++) {
+            mask[i] = '0';
+        }
+        
+        boolean attributesMatch = true;;
+        int position = 0;
+        // for each attribute in the training example
+        for (int i = 0; i < example.length - 1; i++) {
+            // grab out the value for that attribute
+            char value = example[i];
+            
+            // and find its index in attribute array
+            int j;
+            for (j = 0; j < attributes[i].length; j++) { // note the last attribute, p/e is a special case, hence the length-1
+                if (attributes[i][j] == value) {
+                    break;
+                    // once we have found the value (and hence the index) break out
+                }
+            }
+            // we now have the index (j) of the particular value in the training example, i.e. position + j
+            // (where position is the position of the end of the last set of attributes in the bitString)
+            // if the hypothesis has a 1 at this position, all good (1st condition)
+            // if the hypothesis as a 0 at this position, then we have to check the other values in the bitString
+            // for the same attributes. if they are all 0, it means this attribute is not relevant to this hypothesis
+            // so all good. if we find a 1 however, hypothesis doesn't match.
+            if (hypothesis.charAt(position + j) != '1' && existsAnotherOne(hypothesis, position, j, i)) {
+                // hypothesis doesn't match, as explained in comment above this one
+                attributesMatch = false;
+            }
+            position += attributes[i].length; // update our position to skip over this attribute on the next iteration
+        }
+        
+        // check the last bit which is special (2 values, only 1 bit)
+        char lastValue = example[example.length - 1];
+        
+        // now, if hypothesisFits at this point, just need to check the last bit agrees
+        // but if the hypothesis doesn't fit at this point, we can still return true,
+        // provided the class of the hypothesis and training example disagree too
+        if (lastValue == 'p') {
+            lastValue = '1';
+        } else {
+            lastValue = '0';
+        }
+        
+        // class off training example and hypothesis disagree
+        if (hypothesis.charAt(hypothesis.length() - 1) != lastValue) {
+            /* now if we are in here, only 2 things could have happened
+             * 1) the attributes of the hypothesis agrees with the training example, but the classes are in disagreement.
+             *    since the attributes are in agreement, attributesMatch = true at this point. But we want to return false,
+             *    since the classes are wrong. so
+             *    attributesMatch (true) == false ==>> is false, which is what we want to return
+             *    
+             * 2) the attributes of the hypothesis disagree with the training examples AND the classes are in disagreement.
+             *    the attributes disagree, so attributesMatch = false, but we want to return true, because the attributes
+             *    are not covered by the hypothesis, and if that is the case, then the opposite class is predicted. so
+             *    in this case, our hypothesis is correct since it doesnt match with the attributes or the class of the 
+             *    training example, so
+             *    attributesMatch (false) == false ==>> is true, which is what we want to return
+             */
+            return attributesMatch == false;
+        }
+        return attributesMatch;
+    }
+
+    /**
+     * we only want to return false for a hypothesis with respect to a training example
+     * if we have a 1 in the training example (in bitString format) and a 1 in the hypothesis
+     * that belong to the same attribute section, but the 1's dont line up. In other words, the hypothesis says
+     * we should have value v1 for attribute A but the training examples say we should have value v2 for A.
+     * BUT in the case where the hypothesis suggest no value for A, that is, that attribute section contains
+     * all 0's, (ie, this hypo is not dependent on that) then we should not return false, since we dont care
+     * that the training example requires v2.
+     * @param hypothesis
+     * @param position
+     * @param j
+     * @param i
+     * @return
+     */
+    private boolean existsAnotherOne(String hypothesis, int position, int j,
+            int i) {
+        for (int a = 0; a < attributes[i].length; a++) {
+            if (hypothesis.charAt(position + a) == '1' && j != a) return true; // except j
+        }
+        return false;
+    }
+
     public static void main(String[] args) throws IOException {
         
         testTest();
@@ -303,127 +371,6 @@ public class MushoomFitnessFunction implements FitnessFunction {
         System.out.println(hypothesisToReadableString(completeRun_b));
     }
 
-    /**
-     * tests whether or not a particular hypothesis is consistent with a particular training example
-     * @param hypothesis
-     */
-    private boolean test(String hypothesis, char[] example) {
-        // create a blank hypothesis
-        char[] mask = new char[example.length];
-        for (int i = 0; i < mask.length; i++) {
-            mask[i] = '0';
-        }
-        
-        boolean attributesMatch = true;;
-        int position = 0;
-        // for each attribute in the training example
-        for (int i = 0; i < example.length - 1; i++) {
-            // grab out the value for that attribute
-            char value = example[i];
-            
-            // and find its index in attribute array
-            int j;
-            for (j = 0; j < attributes[i].length; j++) { // note the last attribute, p/e is a special case, hence the length-1
-                if (attributes[i][j] == value) {
-                    break;
-                    // once we have found the value (and hence the index) break out
-                }
-            }
-            // we now have the index (j) of the particular value in the training example, i.e. position + j
-            // (where position is the position of the end of the last set of attributes in the bitString)
-            // if the hypothesis has a 1 at this position, all good (1st condition)
-            // if the hypothesis as a 0 at this position, then we have to check the other values in the bitString
-            // for the same attributes. if they are all 0, it means this attribute is not relevant to this hypothesis
-            // so all good. if we find a 1 however, hypothesis doesn't match.
-            if (hypothesis.charAt(position + j) != '1' && existsAnotherOne(hypothesis, position, j, i)) {
-                // hypothesis doesn't match, as explained in comment above this one
-                attributesMatch = false;
-            }
-            position += attributes[i].length; // update our position to skip over this attribute on the next iteration
-        }
-        
-        // check the last bit which is special (2 values, only 1 bit)
-        char lastValue = example[example.length - 1];
-        
-        // now, if hypothesisFits at this point, just need to check the last bit agrees
-        // but if the hypothesis doesn't fit at this point, we can still return true,
-        // provided the class of the hypothesis and training example disagree too
-        if (lastValue == 'p') {
-            lastValue = '1';
-        } else {
-            lastValue = '0';
-        }
-        
-        // class off training example and hypothesis disagree
-        if (hypothesis.charAt(hypothesis.length() - 1) != lastValue) {
-            /* now if we are in here, only 2 things could have happened
-             * 1) the attributes of the hypothesis agrees with the training example, but the classes are in disagreement.
-             *    since the attributes are in agreement, attributesMatch = true at this point. But we want to return false,
-             *    since the classes are wrong. so
-             *    attributesMatch (true) == false ==>> is false, which is what we want to return
-             *    
-             * 2) the attributes of the hypothesis disagree with the training examples AND the classes are in disagreement.
-             *    the attributes disagree, so attributesMatch = false, but we want to return true, because the attributes
-             *    are not covered by the hypothesis, and if that is the case, then the opposite class is predicted. so
-             *    in this case, our hypothesis is correct since it doesnt match with the attributes or the class of the 
-             *    training example, so
-             *    attributesMatch (false) == false ==>> is true, which is what we want to return
-             */
-            return attributesMatch == false;
-        }
-        return attributesMatch;
-    }
-
-    /**
-     * we only want to return false for a hypothesis with respect to a training example
-     * if we have a 1 in the training example (in bitString format) and a 1 in the hypothesis
-     * that belong to the same attribute section, but the 1's dont line up. In other words, the hypothesis says
-     * we should have value v1 for attribute A but the training examples say we should have value v2 for A.
-     * BUT in the case where the hypothesis suggest no value for A, that is, that attribute section contains
-     * all 0's, (ie, this hypo is not dependent on that) then we should not return false, since we dont care
-     * that the training example requires v2.
-     * @param hypothesis
-     * @param position
-     * @param j
-     * @param i
-     * @return
-     */
-    private boolean existsAnotherOne(String hypothesis, int position, int j,
-            int i) {
-        for (int a = 0; a < attributes[i].length; a++) {
-            if (hypothesis.charAt(position + a) == '1' && j != a) return true; // except j
-        }
-        return false;
-    }
-
-    /**
-     * takes a bitString representing a hypothesis and decomposes it down so its fitness can be calculated. 
-     */
-    private void decode(String hypothesis) {
-        
-    }
-
-//    if you want to get the basic algo to work (finding bitstrings with many 1s), use this
-//    public int getFitness(String hypothesis) {
-//
-//        int count = 0;
-//        for (int i = 0; i < hypothesis.length(); i++) {
-//                count += (hypothesis.charAt(i) - '0');
-//        }
-//        return count;
-//    }
-
-    /*
-    write a function that takes in a String hypothesis and outputs a readable representation of that rule like
-
-    (a || b) && (c) && (d) && (e || f || g) ...
-
-    also generate a grepable format
-
-    cat mushroom.cleaned | sed -e "s/[^a-zA-Z?]//g" | grep "[ab][c][d][efg]..."
-
-    which can be used in combination with " | wc" to see the % correct (just to confirm the GA's % correct is accurate
-     */
     private StringBuffer hypothesisToReadableString(String hypothesis) {
         int position = 0;
         StringBuffer toPrint = new StringBuffer("(");
@@ -441,7 +388,6 @@ public class MushoomFitnessFunction implements FitnessFunction {
                 toPrint.delete(toPrint.length() - 4, toPrint.length());
                 toPrint.append(") && (");
             }
-            // if # attributes == number of attributes going to be printed then omit printing (its too general)
         }
 
         toPrint.delete(toPrint.length() - 4, toPrint.length());

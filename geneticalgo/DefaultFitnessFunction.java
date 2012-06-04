@@ -11,9 +11,7 @@ public class DefaultFitnessFunction implements FitnessFunction {
 	}
 
 	public StringBuffer hypothesisToGrepString(String hypothesis) {
-		StringBuffer toPrint = new StringBuffer("");
-		toPrint.append(hypothesis);
-		return toPrint;
+		return new StringBuffer("");
 	}
 
 }

@@ -10,12 +10,10 @@ import java.util.Map;
 public class SetUtilClass {
 	
 	/**
-	 * 
 	 * @returns the value of the highest fitness present in the set
 	 */
 	
 	public static Integer maxFitness(Map<String, Integer> hypothesises) {
-        // TODO: 
         int highest = hypothesises.values().iterator().next(); // start with random element
 
         for (Integer i : hypothesises.values()) {
@@ -27,7 +25,6 @@ public class SetUtilClass {
 	}
 
 	public static String maxHypothesis(Map<String, Integer> hypothesises) {
-		// TODO
         String best = hypothesises.keySet().iterator().next(); // start with random element
 
         for (String s : hypothesises.keySet()) {

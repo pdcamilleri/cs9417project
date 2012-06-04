@@ -1,23 +1,11 @@
 package geneticalgo;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 /**
- * Genetic Algorithm implementation
- * 
- * Do this by generating a set of random hypothesis and testing them to see if
- * they are any good (using fitness function) if they are good (ie, above the
- * threshold), keep; if they are bad (below threshold), throw them away. replace
- * the bad guys with some better guys produced by mutating the good guys,
- * getting the good guys to breed, etc repeat the algorithm using this new set
- * of hypothesis which should be a better group than the previous eventually
- * should be able to get to a really good set of hypothesis after repeating a
- * number of times may need to repeat entire algo to avoid local maxima as the
- * initial set of hypothesis are generated at random
+ *  Implementation of the core Genetic Algorithm.
  *
  */
 
@@ -25,120 +13,84 @@ public class GeneticAlgorithm {
     
     ProblemSpecification problemSpecification;
     
-    int fitnessThreshold;
-    int p;
-    double r;
-    double m;
+    private int fitnessThreshold;
+    private int populationSize;
+    private double crossoverRate;
+    private double mutationRate;
     
     public GeneticAlgorithm(ProblemSpecification problemSpecification) {
         this.problemSpecification = problemSpecification;
     }
 
     /**
-     * 
      * @param fitnessThreshold - point at which the algorithm will stop execution
-     * @param p - number of initial hypothesis to generate
-     * @param r - crossover rate
-     * @param m - mutation rate
+     * @param populationSize - number of initial hypothesis to generate
+     * @param crossoverRate - crossover rate
+     * @param mutationRate - mutation rate
      */
     public void execute(int fitnessThresholdIn, int pIn, double rIn, double mIn) {
         
     	this.fitnessThreshold = fitnessThresholdIn;
-    	this.p = pIn;
-    	this.r = rIn;
-    	this.m = mIn;
+    	this.populationSize = pIn;
+    	this.crossoverRate = rIn;
+    	this.mutationRate = mIn;
 
         // initialise: P <- p random hypothesis
-        // hypothesis: maps bitStrings to fitness
-//        Map<String, Integer> hypothesises = getRandomBitStrings(p, 127);
-    	Map<String, Integer> hypothesises = problemSpecification.generateHypotheses(p);
+    	Map<String, Integer> hypotheses = problemSpecification.generateHypotheses(populationSize);
     	
-        // evaluate: for each h in P, compute fitness(h)
-        for (String h : hypothesises.keySet()) {
-            hypothesises.put(h, problemSpecification.getFitnessFunction().getFitness(h));
-//            System.out.println(hypothesises.get(h) + " - " + h);
+        // for each h in P, compute fitness(h)
+        for (String h : hypotheses.keySet()) {
+            hypotheses.put(h, problemSpecification.getFitnessFunction().getFitness(h));
         }
-        // TODO: combine above steps for efficiency. i.e. get the fitness value
-        // as bitStrings are put into the map
 
         int numberOfGenerations = 0;
 
         // while [max,,h,, fitness(h)] < fitness_threshold
-        while (SetUtilClass.maxFitness(hypothesises) < fitnessThreshold) {
-//            System.out.println(problemSpecification.getFitnessFunction().
-//                    hypothesisToGrepString(SetUtilClass.maxHypothesis(hypothesises)) 
-//                            + " - " + SetUtilClass.maxFitness(hypothesises));
+        while (SetUtilClass.maxFitness(hypotheses) < fitnessThreshold) {
             numberOfGenerations++;
-//            System.out.println("The next generation - " + numberOfGenerations);
 
-            // the set Ps in the comments
-            Map<String, Integer> nextHypothesises = new HashMap<String, Integer>(p);
+            // set containing the next generation of hypotheses
+            Map<String, Integer> nextHypotheses = new HashMap<String, Integer>(populationSize);
 
-            // TODO: idea, set the mean here, move selectNewGeneration to under mutate method, so that only good hypothesises are in the next generation.
-            // so always moving forward. will need to do some testing of this later to see if the idea is sound.
-            int mean = getMean(hypothesises);
-            System.out.println("mean - " + mean + " --- " + "size - " + hypothesises.size());
+            int mean = getMean(hypotheses);
+            System.out.println("mean - " + mean + " --- " + "size - " + hypotheses.size());
             
-            // select: probabilistically select (1-r)p members of P to add to Ps
-            // Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness
-            // h,,j,,)
-            // so the probability that hypothesis h,,i,, will be selected is
-            // the fitness of h,,i,, divided by the sum of all fitnesses of all
-            // hypothesis???
-            // TODO: need to check the above formula, what does it mean?
-//            selectNewGeneration(hypothesises, nextHypothesises, mean); // weed out the weak, keep the strong
-            
-            // other implementation breaks with many bad hypos
-            selectNewGeneration(hypothesises, nextHypothesises, mean);
+            selectNewGeneration(hypotheses, nextHypotheses, mean);
 
-            // singlePointCrossover: probabilistically select r-p/2 pairs of hypos from P.
-            // produce two offspring for each pair using singlePointCrossover operator, add
-            // to Ps
-            
-            singlePointCrossover(hypothesises, nextHypothesises, p, r);
-            
-//            uniformCrossover(hypothesises, nextHypothesises, p, r);
+            singlePointCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
+            //uniformCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
+            //twoPointCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
 
-//            twoPointCrossover(hypothesises, nextHypothesises, p, r);
-
-            // mutate: invert a randomly selected bit in m * p random hypos from
-            // set Ps
-            mutate(nextHypothesises, m, p);
+            mutate(nextHypotheses, mutationRate, populationSize);
 
             // update: P <- Ps
-            hypothesises = nextHypothesises;
+            hypotheses = nextHypotheses;
 
             // evaluate for each h in P, compute fitness(h)
-            // TODO: functionize this more since we use it twice
-            for (String h : hypothesises.keySet()) {
-                hypothesises.put(h, problemSpecification.getFitnessFunction().getFitness(h));
-//                System.out.println(hypothesises.get(h) + " - " + h);
+            for (String h : hypotheses.keySet()) {
+                hypotheses.put(h, problemSpecification.getFitnessFunction().getFitness(h));
             }
-
-//            System.out.println("improved mean - " + getMean(nextHypothesises));
-
-            // done - end of while loop
+            
         }
         // at this point, atleast one one hypothesis in P is above the threshold
 
-        // return the hypo with highest fitness in P
-        String best = SetUtilClass.maxHypothesis(hypothesises);
-
+        // return the hypothesis with highest fitness in P
+        String best = SetUtilClass.maxHypothesis(hypotheses);
         System.out.println("Took " + numberOfGenerations + " generations");
-        System.out.println("Best hypo: " + best + " - " + hypothesises.get(best));
+        System.out.println("Best hypo: " + best + " - " + hypotheses.get(best));
 
     }
 
     /**
-     * mutate: invert a randomly selected bit in m * p random hypos from set Ps
+     * mutate: invert a randomly selected bit in m * p random hypotheses from set Ps/nextHypotheses
      * @param p 
      * @param m 
      * @param nextHypothesises 
      */
     private void mutate(Map<String, Integer> nextHypothesises, double m, int p) {
-        double numberOfHypothesisesToMutate = m * p; // note: need at least 100 (or 50 rounding up) for mutation to occur
+        double numberOfHypothesisesToMutate = m * p;
 
-        // welcome to xaviers school for gifted hypothesises.
+        // welcome to Xavier's school for gifted hypotheses.
         String[] genePool = new String[nextHypothesises.keySet().size()];
         nextHypothesises.keySet().toArray(genePool);
         nextHypothesises.clear();
@@ -151,38 +103,13 @@ public class GeneticAlgorithm {
                 mutant[randomInt] = '0';
             } else if (mutant[randomInt] == '0') {
                 mutant[randomInt] = '1';
-            } else {
-                // should not get here
-                String s = null;
-                s.length();
             }
             genePool[mutantIndex] = new String(mutant);
         }
+        
         // add bitStrings back into the set
         for (int i = 0; i < genePool.length; i++) {
             nextHypothesises.put(genePool[i], null);
-        }
-    }
-
-    /**
-     * implementation of all of this.
-     * basically selecting new hypothesises for the next generation of the algorithm
-     * 
-     * select: probabilistically select (1-r)p members of P to add to Ps
-     * Prob(h,,i,,) = Fitness(h,,i,,) / sum from j=1 to p of (Fitness h,,j,,)
-     * so the probability that hypothesis h,,i,, will be selected is
-     * the fitness of h,,i,, divided by the sum of all fitnesses of all
-     * hypothesis???
-     * TODO: need to check the above formula, what does it mean?
-     * @param nextHypothesises 
-     * @param hypothesises 
-     */
-    private void selectNewGenerationOld(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int mean) {
-        // only adding the best 50% to the next generation of super soldiers.
-        for (String s : hypothesises.keySet()) {
-            if (hypothesises.get(s) >= mean) { // we have a strong hypothesis
-                nextHypothesises.put(s, hypothesises.get(s)); // it gets to live on in the new world
-            }
         }
     }
 
@@ -210,7 +137,7 @@ public class GeneticAlgorithm {
 
         // how many hypothesises make it through to the next generation?
         // A: select (1 - r)p members of P to add to PS
-        double size = (1 - r) * p;
+        double size = (1 - crossoverRate) * populationSize;
         Random r = new Random();
         for (int i = 0; i < size; i++) {
         	int posOnWheel = r.nextInt(tF); // spin the wheel
@@ -233,23 +160,24 @@ public class GeneticAlgorithm {
     }
 
     /**
-     * singlePointCrossover: probabilistically select r*p/2 pairs of hypos from P.
+     * singlePointCrossover: probabilistically select r*p/2 pairs of hypotheses from P.
      * produce two offspring for each pair using singlePointCrossover operator, add
-     * to Ps
+     * to Ps/nextHypotheses
+     * 
      * @param hypothesises
      * @param nextHypothesises
      * @param r 
      * @param p 
      */
     private void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
-        double numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
+        int numPairs = (int) (r*p) / 2;
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
+        
         // perform crossovers
         for (int i = 0; i < numPairs; i++) {
             // select two random parents (note, mother == father is possible)
-            // TODO: check whether or not the above is a problem. probably will be, since overpopulating pool with the same gene.
             String mother = genePool[random.nextInt(genePool.length)]; 
             String father = genePool[random.nextInt(genePool.length)];
             int crossoverPoint = random.nextInt(mother.length());
@@ -264,22 +192,22 @@ public class GeneticAlgorithm {
 
 
     /**
-     * non-contiguous bits from parents in singlePointCrossover.
-     * TODO: uses most of the same code as singlePointCrossover. need to simplify
+     * select non-contiguous bits from parents.
+     * 
      * @param hypothesises
      * @param nextHypothesises
      * @param p
      * @param r
      */
-    private void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
+    @SuppressWarnings("unused")
+    private void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
+        int numPairs = (int) (r*p) / 2;
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
+        
         // perform crossovers
         for (int i = 0; i < numPairs; i++) {
-            // select two random parents (note, mother == father is possible)
-            // TODO: check whether or not the above is a problem. probably will be, since overpopulating pool with the same gene.
             String mother = genePool[random.nextInt(genePool.length)];
             String father = genePool[random.nextInt(genePool.length)];
             String boy  = "";
@@ -299,19 +227,18 @@ public class GeneticAlgorithm {
         }
     }
 
-    private void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, int r) {
-        int numPairs = (r*p) / 2; // TODO: how to do this "probabilistically"?
+    @SuppressWarnings("unused")
+    private void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
+        int numPairs = (int)  (r*p) / 2;
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
+        
         // perform crossovers
         for (int i = 0; i < numPairs; i++) {
-            // select two random parents (note, mother == father is possible)
-            // TODO: check whether or not the above is a problem. probably will be, since overpopulating pool with the same gene.
             String mother = genePool[random.nextInt(genePool.length)];
             String father = genePool[random.nextInt(genePool.length)];
 
-            // TODO: ok, this code is ugly. yea well, youre ugly too.
             int firstCrossoverPoint = 0, secondCrossoverPoint = 0;
             // find two distinct
             int a = random.nextInt(mother.length());

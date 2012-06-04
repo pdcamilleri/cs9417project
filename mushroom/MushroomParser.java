@@ -4,6 +4,6 @@ import geneticalgo.Parser;
 
 public class MushroomParser extends Parser {
     
-    // blank for now, just want the basic impl
+    // blank, basic implementation is fine for us.
 
 }
