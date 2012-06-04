@@ -1,6 +1,6 @@
 package geneticalgo;
 
-public class defaultFitnessFunction implements FitnessFunction {
+public class DefaultFitnessFunction implements FitnessFunction {
 
   public int getFitness(String hypothesis) {
 		  int count = 0;

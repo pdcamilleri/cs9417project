@@ -9,7 +9,12 @@ import java.util.Map;
  * TODO: can then specify the particlar fitness function to use from cmd-line?
  * TODO: note the different fitness functions possible in the spec. {roulette wheel, tournament, rank} selection
  */
-public class FitnessFunction {
+public interface FitnessFunction {
+    
+    public int getFitness(String hypothesis);
+    
+}
+/*
 	
 	// TODO: implement fitness
 	public static int fitness(String hypothesis) {
@@ -62,3 +67,4 @@ public class FitnessFunction {
 		return judgement;
 	}
 }
+*/

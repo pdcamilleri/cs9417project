@@ -1,6 +1,6 @@
 package geneticalgo;
 
-import mushroom.MushroomSpecification;
+//import mushroom.MushroomSpecification;
 import balanceScale.BalanceScaleSpecification;
 
 public class Main {

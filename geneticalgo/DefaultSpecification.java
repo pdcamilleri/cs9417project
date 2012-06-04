@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Random;
 
 
-public class defaultSpecification implements ProblemSpecification {
+public class DefaultSpecification implements ProblemSpecification {
 
 	private static final int LENGTH_OF_HYPOTHESIS = 100;
 	
 	public FitnessFunction getFitnessFunction() {
-		return new defaultFitnessFunction();
+		return new DefaultFitnessFunction();
 	}
 
 	public Map<String, Integer> generateHypotheses (int p) {
