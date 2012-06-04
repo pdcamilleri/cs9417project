@@ -6,7 +6,6 @@ import mushroom.MushroomSpecification;
 public class Main {
 	
 	public static void main(String[] args) {
-		System.out.println("Starting program...");
 
 		// 1) read input data from file into some data structure
 		
@@ -15,12 +14,17 @@ public class Main {
 		
 		// 3) Do Genetic Algo Magic
 		
-		ProblemSpecification problemSpecification;
+		ProblemSpecification problemSpecification = null;
+	
+		if (args.length == 0) {
+		    System.out.println("Must have command line argument of \"balanceScale\" or \"mushroom\"");
+		    return;
+		}
 		
-		if (true) { //put in some condition, like command line arguments?
-//		    problemSpecification = new BalanceScaleSpecification();
+		if (args[0].startsWith("b")) {
+		    problemSpecification = new BalanceScaleSpecification();
+		} else if (args[0].startsWith("m")) {
 			problemSpecification = new MushroomSpecification();
-//			problemSpecification = new ProblemSpecification();
 		}
 		
 		GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
