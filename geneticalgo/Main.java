@@ -1,7 +1,7 @@
 package geneticalgo;
 
-//import mushroom.MushroomSpecification;
 import balanceScale.BalanceScaleSpecification;
+import mushroom.MushroomSpecification;
 
 public class Main {
 	
@@ -18,8 +18,8 @@ public class Main {
 		ProblemSpecification problemSpecification;
 		
 		if (true) { //put in some condition, like command line arguments?
-		    problemSpecification = new BalanceScaleSpecification();
-//			problemSpecification = new MushroomSpecification();
+//		    problemSpecification = new BalanceScaleSpecification();
+			problemSpecification = new MushroomSpecification();
 //			problemSpecification = new ProblemSpecification();
 		}
 		

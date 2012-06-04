@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-
 /**
  * Genetic Algorithm implementation
  * 
@@ -138,7 +137,6 @@ public class GeneticAlgorithm {
      */
     private void mutate(Map<String, Integer> nextHypothesises, double m, int p) {
         double numberOfHypothesisesToMutate = m * p; // note: need at least 100 (or 50 rounding up) for mutation to occur
-//        int numberOfHypothesisesToMutate = nextHypothesises.keySet().size() / 10;
 
         // welcome to xaviers school for gifted hypothesises.
         String[] genePool = new String[nextHypothesises.keySet().size()];
@@ -187,7 +185,13 @@ public class GeneticAlgorithm {
             }
         }
     }
-    
+
+    /**
+     * roulette wheel algorithm for selecting the next generation
+     * @param hypothesises
+     * @param nextHypothesises
+     * @param mean
+     */
     private void selectNewGeneration(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int mean) {
 
     	Map<Integer, String> rouletteWheel = new HashMap<Integer, String>();
@@ -219,40 +223,6 @@ public class GeneticAlgorithm {
         }
     }
         
-        /*ValueComparator bvc =  new ValueComparator(hypothesises);
-        TreeMap<String, Integer> sorted_map = new TreeMap<String, Integer>(bvc);
-        
-        sorted_map.putAll(hypothesises);
-        
-        int size = sorted_map.size() / 2;
-        for (String key : sorted_map.keySet()) {
-//            System.out.println("key/value: " + key + "/"+sorted_map.get(key));
-            nextHypothesises.put(key, sorted_map.get(key));
-            if (--size == 0) return;
-        }
-    
-    // taken from stackoverflow
-    class ValueComparator implements Comparator<Object> {
-
-        Map<String, Integer> base;
-
-        public ValueComparator(Map<String, Integer> base) {
-            this.base = base;
-        }
-
-        public int compare(Object a, Object b) {
-
-            if ((Integer) base.get(a) < (Integer) base.get(b)) {
-                return 1;
-            } else if ((Integer) base.get(a) == (Integer) base.get(b)) {
-                return 0;
-            } else {
-                return -1;
-            }
-    	}
-	}
-    */
-
     private int getMean(Map<String, Integer> hypothesises) {
         int mean = 0;
         for (Integer i : hypothesises.values()) {
@@ -261,27 +231,6 @@ public class GeneticAlgorithm {
         mean /= hypothesises.values().size();
         return mean;
     }
-
-    /**
-     * TODO should this go here? or in some sort of util class?
-     *//*
-    private Map<String, Integer> getRandomBitStrings(int p, int lengthOfBitStrings) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        for (int i = 0; i < p; i++) {
-//            String bitString = getRandomBitString();
-            Random r = new Random();
-            String s = "";
-            for (int j = 0; j < lengthOfBitStrings; j++) { // TODO what is the length of each hypo? needs to be a variable
-                if (r.nextInt(25) == 0) {
-                    s += "1";
-                } else {
-                    s += "0";
-                }
-            }
-            map.put(s, null);
-        }
-        return map;
-    }*/
 
     /**
      * singlePointCrossover: probabilistically select r*p/2 pairs of hypos from P.

@@ -20,7 +20,7 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 		Parser parser = new BalanceScaleParser();
 		char[][] dataSet = null;
 		try {
-			dataSet = parser.parse("datasets/balancescale.cleaned");
+			dataSet = parser.parse("src/datasets/balancescale.cleaned");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -173,4 +173,9 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 			System.out.println(tuple);
 		}
 	}
+
+    @Override
+    public StringBuffer hypothesisToGrepString(String hypothesis) {
+        return new StringBuffer("hypothesisToGrepString not implemented - " + hypothesis); 
+    }
 }
