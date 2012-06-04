@@ -36,17 +36,16 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 			}
 		}
 
+		double scr = (double) score;
+		double dataSetSize = 625;
+		System.out.print((scr / dataSetSize * 100) + "%");
+	    System.out.print(" -->> " + (hypothesisToGrepString(hypothesis)));
+	    System.out.println("\t\t\t\t\t\t\t\t\t\t\t" + hypothesis);
+		
 		return score;
 	}
 
-	public static void main(String[] args) throws IOException {
-		
-		BalanceScaleFitnessFunction bsff = new BalanceScaleFitnessFunction();
-//		bsff.bigTest();
-//		bsff.testNoValAllowed();
-//		bsff.testParser();
-		bsff.testFitness();
-	}
+
 	
 	private void testFitness() {
 		BalanceScaleSpecification bss = new BalanceScaleSpecification();
@@ -113,6 +112,15 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 		return judgement;
 	}
 	
+	public static void main(String[] args) throws IOException {
+		
+		BalanceScaleFitnessFunction bsff = new BalanceScaleFitnessFunction();
+//		bsff.bigTest();
+//		bsff.testNoValAllowed();
+//		bsff.testParser();
+		bsff.testFitness();
+	}
+	
 	private void bigTest() {
 		
 		String[] hypartharsarses = {"01100100110110101110010011000001110100010010010000010111101011110110010100111101110110000010",
@@ -172,5 +180,46 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
 		for (char[] tuple : dataSet) {
 			System.out.println(tuple);
 		}
+	}
+
+	@Override
+	public StringBuffer hypothesisToGrepString(String hypothesis) {
+		
+		char[] vals = {'1','2','3','4','5'};
+		
+		int position = 0;
+        StringBuffer toPrint = new StringBuffer("");
+        for (int i = 0; i < 4; i++) { // num attributes
+            toPrint.append("");
+            boolean addedSomething = false;
+            for (int j = 0; j < 5; j++) { // num vals
+                if (hypothesis.charAt(position + j) == '1') {
+                    if (!addedSomething) {
+                        toPrint.append("[");
+                    }
+                    toPrint.append(vals[j]);
+                    addedSomething = true;
+                }
+            }
+            position += 5;
+            if (addedSomething) {
+                toPrint.append("]");
+            } else {
+                toPrint.append('.');
+            }
+        }
+        String attr = hypothesis.substring(23*0+20, 23*0+20+3); // replace 0 with i if adding multiple rules
+        if (attr.equals("100")) {
+			toPrint.append('L');
+		}
+		if (attr.equals("010")) {
+			toPrint.append('B');
+		}
+		if (attr.equals("001")) {
+			toPrint.append('R');
+		}
+
+        // handle last attribute p/e separately
+        return toPrint;
 	}
 }
