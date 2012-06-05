@@ -10,9 +10,11 @@ public class Main {
     public static void main(String[] args) {
 
         ProblemSpecification problemSpecification = null;
+        
+         Map<String, Integer> bestHypotheses = new HashMap<String, Integer>();
 
-        if (args.length == 0) {
-            System.out.println("Must have command line argument of \"balanceScale\" or \"mushroom\"");
+        if (args.length < 1) {
+            System.out.println("Must have command line argument of \"balanceScale\" or \"mushroom\" then # times to run the GA");
             return;
         }
 
@@ -36,8 +38,15 @@ public class Main {
         }
 
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
-        geneticAlgorithm.execute(threshold, populationSize, crossoverRate, mutationRate, problemSpecification.getOperators());
-
+        
+        for (int i = 0; i < args[1]; i++ ) {
+            geneticAlgorithm.execute(threshold, populationSize, crossoverRate, mutationRate, problemSpecification.getOperators(), bestHypotheses);
+        }
+        
+        for (String h : bestHypotheses.keySet()) {
+            System.out.println(h + " fitness: " + bestHypotheses.get(h));
+        }
+        
         System.out.println("Closing program...");
     }
 
