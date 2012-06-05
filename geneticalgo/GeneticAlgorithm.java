@@ -24,7 +24,7 @@ public class GeneticAlgorithm {
      * @param crossoverRate - crossover rate
      * @param mutationRate - mutation rate
      */
-    public void execute(int fitnessThreshold, int populationSize, double crossoverRate, double mutationRate, GeneticOperators operators) {
+    public void execute(int fitnessThreshold, int populationSize, double crossoverRate, double mutationRate, GeneticOperators operators, Map<String, Integer> bestHypotheses) {
         
         // initialise: P <- p random hypothesis
     	Map<String, Integer> hypotheses = problemSpecification.generateHypotheses(populationSize);
@@ -69,6 +69,7 @@ public class GeneticAlgorithm {
         String best = SetUtilClass.maxHypothesis(hypotheses);
         System.out.println("Took " + numberOfGenerations + " generations");
         System.out.println("Best hypo: " + best + " - " + hypotheses.get(best));
+        bestHypotheses.put(best, hypotheses.get(best));
 
     }
 
