@@ -46,6 +46,7 @@ public class Main {
             geneticAlgorithm.execute(threshold, populationSize, crossoverRate, mutationRate, problemSpecification.getOperators(), bestHypotheses);
         }
         
+        System.out.println("\nBest hypothesis from each run of the algorithm: ");
         for (String h : bestHypotheses.keySet()) {
             System.out.println(h + " fitness: " + bestHypotheses.get(h));
         }
