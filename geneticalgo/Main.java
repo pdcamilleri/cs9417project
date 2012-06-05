@@ -1,5 +1,8 @@
 package geneticalgo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import balanceScale.BalanceScaleOperators;
 import balanceScale.BalanceScaleSpecification;
 import mushroom.MushroomOperators;
