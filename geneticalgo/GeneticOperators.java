@@ -1,5 +1,6 @@
 package geneticalgo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -46,32 +47,49 @@ public class GeneticOperators {
     public void selectNewGeneration(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises,
                                      int mean, double crossoverRate, int populationSize) {
 
-        Map<Integer, String> rouletteWheel = new HashMap<Integer, String>();
-        int tF = 0;
-        int currentTicket = 0;
+        ArrayList<String> rouletteWheel = new ArrayList<String>();
+        int p = 0;
         for (String key : hypothesises.keySet()) {
-            int fitness = hypothesises.get(key).intValue();
-            if (hypothesises.get(key) != null) {
-                tF = tF + hypothesises.get(key).intValue();
-            }
-            for (int i = 0; i < hypothesises.get(key).intValue(); i++) {
-                rouletteWheel.put(currentTicket + i, key);
-            }
-            currentTicket += fitness;
-        }
+            p++;
+        	int fitness = hypothesises.get(key).intValue();
+	        for (int i = 0; i < fitness; i++) {
+	            rouletteWheel.add(key);
+	        }
+	        rouletteWheel.add(key); // for the hypothesis with 0 fitness
+        } 
 
         // how many hypothesises make it through to the next generation?
         // A: select (1 - r)p members of P to add to PS
         double size = (1 - crossoverRate) * populationSize;
         Random r = new Random();
         for (int i = 0; i < size; i++) {
-            int posOnWheel = r.nextInt(tF); // spin the wheel
-            String selectedHypo = rouletteWheel.get(Integer.valueOf(posOnWheel));
-            if (!nextHypothesises.containsKey(selectedHypo)) {
-                nextHypothesises.put(selectedHypo, hypothesises.get(selectedHypo));
-            } else {
-                i--;
+            int posOnWheel = r.nextInt(rouletteWheel.size()); // spin the wheel
+            String selectedHypo = rouletteWheel.get(posOnWheel);
+            int j = posOnWheel;
+            
+            Integer shFitness = hypothesises.get(selectedHypo) +1;
+            if (j > 0) {
+            	while (rouletteWheel.get(j).equals(selectedHypo)) {
+            		if (j == 0) {
+            			break;
+            		}
+            		j--;
+            	}
             }
+            if (j < rouletteWheel.size() -1 && j != 0 ) {
+            	j++;
+            }
+            int k = 0;
+            while (k < shFitness) {
+            	rouletteWheel.remove(j);
+            	k++;
+            	if (j == rouletteWheel.size()) {
+            		break;
+            	}
+            }
+            
+            nextHypothesises.put(selectedHypo, hypothesises.get(selectedHypo));
+            
         }
     }
 
@@ -87,7 +105,8 @@ public class GeneticOperators {
      * @param p
      */
     public void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
-        int numPairs = (int) (r*p) / 2;
+    	double numPairs = (r*p) / 2;
+        numPairs = (int) Math.ceil(numPairs);
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -97,7 +116,7 @@ public class GeneticOperators {
             // select two random parents (note, mother == father is possible)
             String mother = genePool[random.nextInt(genePool.length)];
             String father = genePool[random.nextInt(genePool.length)];
-            int crossoverPoint = random.nextInt(mother.length());
+            int crossoverPoint = 1 + random.nextInt(mother.length() - 1 ); // no crossoverpoint 0
 
             // let the mating begin!
             String boy = father.substring(0, crossoverPoint) + mother.substring(crossoverPoint);
