@@ -209,7 +209,12 @@ public class ScaleFitnessFunction implements FitnessFunction {
     }
     
     public static void main (String[] args) {
+        // solutions produced by running Main.java with arguments "-s"
+        System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("10111101001101"));
         System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("10111101011100"));
+        System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("10111101001101"));
+        System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("11111001001101"));
+        System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("11111001001101"));
         return;
     }
 
