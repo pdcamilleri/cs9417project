@@ -26,4 +26,30 @@ public class BalanceScaleOperators extends GeneticOperators {
             nextHypothesises.put(girl, null);
         }
     }
+    
+     public void mutate(Map<String, Integer> nextHypothesises, double m, int p) {
+        double numberOfHypothesisesToMutate = m * p;
+
+        // welcome to Xavier's school for gifted hypotheses.
+        String[] genePool = new String[nextHypothesises.keySet().size()];
+        nextHypothesises.keySet().toArray(genePool);
+        nextHypothesises.clear();
+        Random random = new Random();
+        for (int i = 0; i < numberOfHypothesisesToMutate; i++) {
+            int mutantIndex = random.nextInt(genePool.length);
+            int randomInt = random.nextInt(genePool[0].length()-3); // -3 so we dont produce invalid classifications like 101
+            char[] mutant = genePool[mutantIndex].toCharArray();
+            if (mutant[randomInt] == '1') {
+                mutant[randomInt] = '0';
+            } else if (mutant[randomInt] == '0') {
+                mutant[randomInt] = '1';
+            }
+            genePool[mutantIndex] = new String(mutant);
+        }
+
+        // add bitStrings back into the set
+        for (int i = 0; i < genePool.length; i++) {
+            nextHypothesises.put(genePool[i], null);
+        }
+    }
 }
