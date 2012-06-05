@@ -34,7 +34,7 @@ public class ScaleFitnessFunction implements FitnessFunction {
         
         Parser parser = new ScaleParser();
         try {
-            allExamples = parser.parse("src/datasets/balancescale.super.cleaned");
+            allExamples = parser.parse("datasets/balancescale.super.cleaned");
         } catch (IOException e) {
             e.printStackTrace();
         }

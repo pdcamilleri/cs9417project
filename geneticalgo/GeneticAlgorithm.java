@@ -46,7 +46,9 @@ public class GeneticAlgorithm {
             Map<String, Integer> nextHypotheses = new HashMap<String, Integer>(populationSize);
 
             int mean = getMean(hypotheses);
-            System.out.println("mean - " + mean + " --- " + "size - " + hypotheses.size());
+            System.out.println("Gen #" + numberOfGenerations + 
+                               ": mean - " + mean + " --- " + 
+                               "size of population - " + hypotheses.size());
 
             operators.selectNewGeneration(hypotheses, nextHypotheses, mean, crossoverRate, populationSize);
 
