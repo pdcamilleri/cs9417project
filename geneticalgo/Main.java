@@ -3,10 +3,9 @@ package geneticalgo;
 import java.util.HashMap;
 import java.util.Map;
 
-import balanceScale.BalanceScaleOperators;
-import balanceScale.BalanceScaleSpecification;
-import mushroom.MushroomOperators;
 import mushroom.MushroomSpecification;
+import scale.ScaleSpecification;
+import balanceScale.BalanceScaleSpecification;
 
 public class Main {
 
@@ -41,6 +40,13 @@ public class Main {
             crossoverRate = 0.2;
             mutationRate = 0.05;
             trainingDataSize = 8124;
+        } else if (args[0].startsWith("s")) {
+            problemSpecification = new ScaleSpecification();
+            threshold = 620;
+            populationSize = 50;
+            crossoverRate = 0.2;
+            mutationRate = 0.05;
+            trainingDataSize = 625;
         }
 
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
