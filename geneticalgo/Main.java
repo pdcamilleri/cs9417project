@@ -25,19 +25,22 @@ public class Main {
         int populationSize = 0;
         double crossoverRate = 0;
         double mutationRate = 0;
+        double trainingDataSize = 1;
 
         if (args[0].startsWith("b")) {
             problemSpecification = new BalanceScaleSpecification();
-            threshold = 600;
+            threshold = 400;
             populationSize = 50;
             crossoverRate = 0.1;
             mutationRate = 0.01;
+            trainingDataSize = 625;
         } else if (args[0].startsWith("m")) {
             problemSpecification = new MushroomSpecification();
             threshold = 55;
             populationSize = 50;
             crossoverRate = 0.2;
             mutationRate = 0.05;
+            trainingDataSize = 8124;
         }
 
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
@@ -48,7 +51,7 @@ public class Main {
         
         System.out.println("\nBest hypothesis from each run of the algorithm: ");
         for (String h : bestHypotheses.keySet()) {
-            System.out.println(h + " fitness: " + bestHypotheses.get(h));
+            System.out.println(h + " fitness: " + ((double)bestHypotheses.get(h) / trainingDataSize * 100) + "%" );
         }
         
         System.out.println("Closing program...");
