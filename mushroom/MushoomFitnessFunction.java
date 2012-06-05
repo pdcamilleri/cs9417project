@@ -41,7 +41,7 @@ public class MushoomFitnessFunction implements FitnessFunction {
 
         Parser parser = new MushroomParser();
         try {
-            allExamples = parser.parse("src/datasets/mushroom.cleaned");
+            allExamples = parser.parse("datasets/mushroom.cleaned");
             sortExamples(allExamples);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,8 @@
 package geneticalgo;
 
+import balanceScale.BalanceScaleOperators;
 import balanceScale.BalanceScaleSpecification;
+import mushroom.MushroomOperators;
 import mushroom.MushroomSpecification;
 
 public class Main {
@@ -10,8 +12,7 @@ public class Main {
         ProblemSpecification problemSpecification = null;
 
         if (args.length == 0) {
-            System.out
-                    .println("Must have command line argument of \"balanceScale\" or \"mushroom\"");
+            System.out.println("Must have command line argument of \"balanceScale\" or \"mushroom\"");
             return;
         }
 
@@ -35,7 +36,7 @@ public class Main {
         }
 
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(problemSpecification);
-        geneticAlgorithm.execute(threshold, populationSize, crossoverRate, mutationRate);
+        geneticAlgorithm.execute(threshold, populationSize, crossoverRate, mutationRate, problemSpecification.getOperators());
 
         System.out.println("Closing program...");
     }

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 
 import geneticalgo.FitnessFunction;
+import geneticalgo.GeneticOperators;
 import geneticalgo.ProblemSpecification;
 
 public class BalanceScaleSpecification implements ProblemSpecification {
@@ -53,6 +54,11 @@ public class BalanceScaleSpecification implements ProblemSpecification {
             hypos.put(s, null);
         }
         return hypos;
+    }
+
+    @Override
+    public GeneticOperators getOperators() {
+        return new BalanceScaleOperators();
     }
 
     public static void main(String[] args) throws IOException {

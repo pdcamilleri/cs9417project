@@ -31,4 +31,9 @@ public class DefaultSpecification implements ProblemSpecification {
 	        return map;
 	}
 
+    @Override
+    public GeneticOperators getOperators() {
+        return new GeneticOperators();
+    }
+
 }

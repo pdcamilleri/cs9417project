@@ -1,6 +1,7 @@
 package mushroom;
 
 import geneticalgo.FitnessFunction;
+import geneticalgo.GeneticOperators;
 import geneticalgo.ProblemSpecification;
 
 import java.util.HashMap;
@@ -31,6 +32,11 @@ public class MushroomSpecification implements ProblemSpecification {
             map.put(s, null);
         }
         return map;
+    }
+
+    @Override
+    public GeneticOperators getOperators() {
+        return new MushroomOperators();
     }
 }
 

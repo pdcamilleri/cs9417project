@@ -22,7 +22,7 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
         Parser parser = new BalanceScaleParser();
         char[][] dataSet = null;
         try {
-            dataSet = parser.parse("src/datasets/balancescale.cleaned");
+            dataSet = parser.parse("datasets/balancescale.cleaned");
         } catch (IOException e) {
             e.printStackTrace();
         }

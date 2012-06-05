@@ -11,5 +11,6 @@ public interface ProblemSpecification {
     FitnessFunction getFitnessFunction();
     
     Map<String, Integer> generateHypotheses (int p);
-    
+
+    GeneticOperators getOperators();
 }
