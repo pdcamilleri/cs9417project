@@ -12,7 +12,7 @@ public class GeneticAlgorithm {
     
     ProblemSpecification problemSpecification;
     
-    private final int MAX_RUNTIME = 10000;
+    private final int MAX_RUNTIME = 100;
     
     public GeneticAlgorithm(ProblemSpecification problemSpecification) {
         this.problemSpecification = problemSpecification;
@@ -27,7 +27,7 @@ public class GeneticAlgorithm {
     public void execute(int fitnessThreshold, int populationSize, double crossoverRate, double mutationRate, GeneticOperators operators, Map<String, Integer> bestHypotheses) {
         
         // initialise: P <- p random hypothesis
-    	Map<String, Integer> hypotheses = problemSpecification.generateHypotheses(populationSize);
+        Map<String, Integer> hypotheses = problemSpecification.generateHypotheses(populationSize);
     	
         // for each h in P, compute fitness(h)
         for (String h : hypotheses.keySet()) {
@@ -38,6 +38,9 @@ public class GeneticAlgorithm {
 
         // while [max,,h,, fitness(h)] < fitness_threshold
         while (SetUtilClass.maxFitness(hypotheses) < fitnessThreshold && numberOfGenerations < MAX_RUNTIME) {
+        	if (numberOfGenerations % 10 == 0) {
+        		System.out.println("running...");
+        	}
             numberOfGenerations++;
 
             // set containing the next generation of hypotheses
@@ -48,7 +51,9 @@ public class GeneticAlgorithm {
 
             operators.selectNewGeneration(hypotheses, nextHypotheses, mean, crossoverRate, populationSize);
 
-            operators.singlePointCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
+            while (nextHypotheses.size() < populationSize) {
+            	operators.singlePointCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
+            }
             //uniformCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
             //twoPointCrossover(hypotheses, nextHypotheses, populationSize, crossoverRate);
 
