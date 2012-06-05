@@ -4,14 +4,8 @@ import geneticalgo.FitnessFunction;
 import geneticalgo.Parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.swing.event.HyperlinkEvent;
-
-import mushroom.MushroomParser;
 
 public class ScaleFitnessFunction implements FitnessFunction {
 
@@ -64,8 +58,8 @@ public class ScaleFitnessFunction implements FitnessFunction {
      * vvoovvoovvoovv
      * 00 = LW = +
      * 01 = LD = -
-     * 10 = RW = *
-     * 11 = RD = /
+     * 10 = RW = /
+     * 11 = RD = *
      */
     @Override
     public int getFitness(String hypothesis) {
@@ -73,6 +67,7 @@ public class ScaleFitnessFunction implements FitnessFunction {
 //        System.out.println(function);
         int correct = computeValue(function);
         // TODO Auto-generated method stub
+        System.out.println(correct + " - " + hypothesisToGrepString(hypothesis));
         return correct;
     }
 
@@ -215,6 +210,7 @@ public class ScaleFitnessFunction implements FitnessFunction {
         System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("10111101001101"));
         System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("11111001001101"));
         System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("11111001001101"));
+        System.out.println(new ScaleFitnessFunction().hypothesisToGrepString("11111001011100"));
         return;
     }
 
