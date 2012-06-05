@@ -67,26 +67,9 @@ public class GeneticOperators {
             String selectedHypo = rouletteWheel.get(posOnWheel);
             int j = posOnWheel;
             
-            Integer shFitness = hypothesises.get(selectedHypo) +1;
-            if (j > 0) {
-            	while (rouletteWheel.get(j).equals(selectedHypo)) {
-            		if (j == 0) {
-            			break;
-            		}
-            		j--;
-            	}
-            }
-            if (j < rouletteWheel.size() -1 && j != 0 ) {
-            	j++;
-            }
-            int k = 0;
-            while (k < shFitness) {
-            	rouletteWheel.remove(j);
-            	k++;
-            	if (j == rouletteWheel.size()) {
-            		break;
-            	}
-            }
+            ArrayList<String> toRemove = new ArrayList<String>();
+            toRemove.add(selectedHypo);
+            rouletteWheel.removeAll(toRemove);
             
             nextHypothesises.put(selectedHypo, hypothesises.get(selectedHypo));
             
