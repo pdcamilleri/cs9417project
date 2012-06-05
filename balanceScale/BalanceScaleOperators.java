@@ -7,7 +7,8 @@ import java.util.Random;
 
 public class BalanceScaleOperators extends GeneticOperators {
     public void singlePointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
-        int numPairs = (int) (r*p) / 2;
+        double numPairs = (r*p) / 2;
+        numPairs = (int) Math.ceil(numPairs);
         Random random = new Random();
         String[] genePool = new String[hypothesises.keySet().size()];
         hypothesises.keySet().toArray(genePool);
@@ -17,7 +18,7 @@ public class BalanceScaleOperators extends GeneticOperators {
             // select two random parents (note, mother == father is possible)
             String mother = genePool[random.nextInt(genePool.length)];
             String father = genePool[random.nextInt(genePool.length)];
-            int crossoverPoint = random.nextInt(mother.length() - 3); // -3 so we dont produce invalid classifications like 101
+            int crossoverPoint = 1 + random.nextInt(mother.length() - 4); // -3 so we dont produce invalid classifications like 101
 
             // let the mating begin!
             String boy = father.substring(0, crossoverPoint) + mother.substring(crossoverPoint);
@@ -27,7 +28,7 @@ public class BalanceScaleOperators extends GeneticOperators {
         }
     }
     
-     public void mutate(Map<String, Integer> nextHypothesises, double m, int p) {
+    public void mutate(Map<String, Integer> nextHypothesises, double m, int p) {
         double numberOfHypothesisesToMutate = m * p;
 
         // welcome to Xavier's school for gifted hypotheses.
