@@ -100,9 +100,9 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
                 // if all attributes dont match, then the rule predicts either of the two classes it doesnt specify.
                 // if the actual class is NOT one of these two classes, aka if
                 // if actual class = predicted class, rule is wrong
-                if (classMatch) {
+//                if (classMatch) {
                     wrongRules++;
-                }
+//                }
             }
         }
         // if there are ANY incorrect rules in the hypothesis, then the entire hypothesis is wrong
@@ -115,7 +115,7 @@ public class BalanceScaleFitnessFunction implements FitnessFunction {
     public static void main(String[] args) throws IOException {
 
         BalanceScaleFitnessFunction bsff = new BalanceScaleFitnessFunction();
-        //		bsff.bigTest();
+        //    	bsff.bigTest();
         //		bsff.testNoValAllowed();
         //		bsff.testParser();
         bsff.testFitness();
