@@ -1,7 +1,6 @@
 package geneticalgo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -48,9 +47,7 @@ public class GeneticOperators {
                                      int mean, double crossoverRate, int populationSize) {
 
         ArrayList<String> rouletteWheel = new ArrayList<String>();
-        int p = 0;
         for (String key : hypothesises.keySet()) {
-            p++;
         	int fitness = hypothesises.get(key).intValue();
 	        for (int i = 0; i < fitness; i++) {
 	            rouletteWheel.add(key);
@@ -65,7 +62,6 @@ public class GeneticOperators {
         for (int i = 0; i < size; i++) {
             int posOnWheel = r.nextInt(rouletteWheel.size()); // spin the wheel
             String selectedHypo = rouletteWheel.get(posOnWheel);
-            int j = posOnWheel;
             
             ArrayList<String> toRemove = new ArrayList<String>();
             toRemove.add(selectedHypo);
@@ -118,7 +114,6 @@ public class GeneticOperators {
      * @param p
      * @param r
      */
-    @SuppressWarnings("unused")
     public void uniformCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
         int numPairs = (int) (r*p) / 2;
         Random random = new Random();
@@ -146,7 +141,6 @@ public class GeneticOperators {
         }
     }
 
-    @SuppressWarnings("unused")
     public void twoPointCrossover(Map<String, Integer> hypothesises, Map<String, Integer> nextHypothesises, int p, double r) {
         int numPairs = (int)  (r*p) / 2;
         Random random = new Random();

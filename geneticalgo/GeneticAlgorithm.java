@@ -2,7 +2,6 @@ package geneticalgo;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  *  Implementation of the core Genetic Algorithm.
@@ -12,7 +11,7 @@ public class GeneticAlgorithm {
     
     ProblemSpecification problemSpecification;
     
-    private final int MAX_RUNTIME = 100;
+    private final int MAX_RUNTIME = 10000;
     
     public GeneticAlgorithm(ProblemSpecification problemSpecification) {
         this.problemSpecification = problemSpecification;
